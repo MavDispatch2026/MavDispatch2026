@@ -153,6 +153,33 @@
 
   .notice { background: #EBF5FB; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--blue); margin-bottom: 14px; line-height: 1.5; }
   .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  /* HOUR ENTRY ROWS */
+  .hour-entry {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--light);
+  }
+  .hour-entry:last-of-type { border-bottom: none; }
+  .hour-entry.t2 { background: #F0FFF4; border-radius: 8px; padding: 10px 8px; margin-bottom: 4px; }
+  .hour-label { font-size: 15px; font-weight: 600; color: var(--text); }
+  .hour-input {
+    padding: 12px 8px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    width: 100%;
+  }
+  .hour-input:focus { outline: none; border-color: var(--blue); background: #EBF5FB; }
+
 </style>
 </head>
 <body>
@@ -179,15 +206,30 @@
 <div class="screen active" id="screen-0">
   <div class="card">
     <div class="card-title">Job Information</div>
-    <div class="field-row">
-      <div class="field"><label>Invoice #</label><input type="text" id="inv-num" placeholder="e.g. 306325" inputmode="numeric" oninput="document.getElementById('hdr-inv').textContent=this.value||'No Invoice #'"></div>
-      <div class="field"><label>Date</label><input type="date" id="inv-date"></div>
+
+    <!-- Invoice # + Dispatch Job # + Date all on one row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>Invoice #</label>
+        <input type="text" id="inv-num" placeholder="e.g. 306325" inputmode="numeric" oninput="document.getElementById('hdr-inv').textContent=this.value||'No Invoice #'">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Dispatch Job #</label>
+        <input type="text" id="dispatch-num" placeholder="e.g. 44355000">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Date</label>
+        <input type="date" id="inv-date">
+      </div>
     </div>
+
+    <!-- Oil Company = billing dropdown -->
     <div class="field">
-      <label>Customer (Cable Company)</label>
-      <select id="customer" onchange="customerChanged()">
-        <option value="">— Select Customer —</option>
-        <option value="Pioneer">Pioneer (Exxon)</option>
+      <label>Oil Company — Who Are We Billing?</label>
+      <select id="customer" onchange="customerChanged()"
+        style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);background:var(--input-bg);appearance:none;cursor:pointer;">
+        <option value="">— Select Oil Company —</option>
+        <option value="Pioneer">Pioneer / ExxonMobil</option>
         <option value="Ovintiv">Ovintiv</option>
         <option value="Diamondback">Diamondback</option>
         <option value="Hibernia">Hibernia / Civitas</option>
@@ -197,13 +239,19 @@
         <option value="Standard">Standard (Black Swan / Blue Ox / Centennial / Endeavor / Halliburton / High Peak / Moriah / Pinon / Reliance / TRP)</option>
       </select>
     </div>
+
+    <!-- Cable Company (free text) + Well # -->
     <div class="field-row">
-      <div class="field"><label>Oil Company</label><input type="text" id="oil-co"></div>
+      <div class="field">
+        <label>Cable Company</label>
+        <input type="text" id="cable-co" placeholder="e.g. Summit, Flint Energy">
+      </div>
       <div class="field"><label>Well Number</label><input type="text" id="well-num"></div>
     </div>
+
     <div class="field-row">
       <div class="field"><label>Lease Name</label><input type="text" id="lease-name"></div>
-      <div class="field"><label>Dispatch Job No.</label><input type="text" id="dispatch-num"></div>
+      <div class="field"><label>Cable Co. Location</label><input type="text" id="cable-loc"></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Spooler Name</label><input type="text" id="spooler-name"></div>
@@ -228,31 +276,145 @@
 
 <!-- ══ SCREEN 2: HOURS ══ -->
 <div class="screen" id="screen-1">
-  <div class="notice">For each slot: pick the <strong>rate type</strong> and <strong>day or night</strong> — the rate locks in. Then enter hours. Each slot can have its own rate type.</div>
 
+  <!-- MASTER RATE SELECTOR -->
   <div class="card">
-    <div class="card-title">Tech 1 — Hours &amp; Mileage</div>
-    <div id="t1-slots"></div>
-    <div class="divider"></div>
-    <div id="t1-miles"></div>
+    <div class="card-title">Select Job Setup</div>
+    <div class="notice" style="margin-bottom:12px;">
+      Pick one — this locks in the hourly rate for all 4 hour slots automatically.
+    </div>
+    <select id="job-setup" onchange="jobSetupChanged()"
+      style="width:100%;padding:16px;font-size:16px;font-weight:700;border:2px solid var(--border);border-radius:10px;background:var(--input-bg);font-family:inherit;appearance:none;cursor:pointer;">
+      <option value="">— Select Job Setup —</option>
+    </select>
+
+    <!-- LOCKED RATE DISPLAY -->
+    <div id="master-rate-display" style="display:none;margin-top:14px;background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:14px 16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">🔒 Locked Rate — Applied to All Hour Slots</div>
+      <div style="font-size:28px;font-weight:800;color:var(--dark-red);" id="master-rate-value">$0.00 / hr</div>
+    </div>
   </div>
 
-  <div class="toggle-row">
+  <!-- TECH 1 HOURS -->
+  <div class="card" id="hours-card" style="display:none;">
+    <div class="card-title">Tech 1 — Enter Hours</div>
+
+    <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:6px;padding:0 4px;">
+      <div></div>
+      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Hours</div>
+    </div>
+
+    <div class="hour-entry" id="row-load">
+      <div class="hour-label">Load / Unload</div>
+      <input type="number" class="hour-input" id="t1-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry" id="row-travel">
+      <div class="hour-label">Travel Time</div>
+      <input type="number" class="hour-input" id="t1-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry" id="row-standby">
+      <div class="hour-label">Standby Time</div>
+      <input type="number" class="hour-input" id="t1-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry" id="row-spool">
+      <div class="hour-label">Spooling Labor</div>
+      <input type="number" class="hour-input" id="t1-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+
+    <div style="background:var(--light);border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:13px;font-weight:700;color:var(--muted);">Tech 1 Hours Subtotal</span>
+      <span style="font-size:20px;font-weight:800;color:var(--dark-red);" id="t1-hours-sub">$0.00</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- MILEAGE -->
+    <div style="margin-top:4px;">
+      <div style="font-size:13px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Spooler Miles</div>
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;">
+        <div style="background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">🔒 Mile Rate</div>
+          <div style="font-size:20px;font-weight:800;color:var(--dark-red);margin-top:2px;" id="t1-mile-rate-display">$0.00 / mi</div>
+        </div>
+        <input type="number" class="hour-input" id="t1-miles" min="0" step="1" value="" placeholder="0" inputmode="numeric" oninput="calcAll()">
+      </div>
+      <div style="text-align:right;margin-top:8px;font-size:15px;font-weight:700;color:var(--dark-red);">
+        Miles Total: <span id="t1-miles-total">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECOND TECH TOGGLE -->
+  <div class="toggle-row" id="tech2-toggle-row" style="display:none;">
     <div>
       <div class="toggle-label">Second Tech on this job?</div>
-      <div class="toggle-label sub">Adds a full second set of hours + mileage</div>
+      <div class="toggle-label sub">Same rate type — separate hours &amp; mileage</div>
     </div>
     <div class="toggle" id="tog-t2" onclick="toggleTech2()"></div>
   </div>
 
+  <!-- TECH 2 -->
   <div class="card" id="t2-card" style="display:none;">
-    <div class="card-title" style="color:var(--green);">Tech 2 — Hours &amp; Mileage</div>
-    <div id="t2-slots"></div>
+    <div class="card-title" style="color:var(--green);">Tech 2 — Enter Hours</div>
+
+    <!-- TECH 2 RATE SELECTOR -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Tech 2 Rate (defaults to same as Tech 1)</div>
+      <select id="t2-job-setup" onchange="tech2SetupChanged()"
+        style="width:100%;padding:14px;font-size:15px;font-weight:700;border:2px solid #A9DFBF;border-radius:10px;background:#EAF5EA;font-family:inherit;appearance:none;cursor:pointer;color:var(--text);">
+        <option value="">— Same as Tech 1 —</option>
+      </select>
+      <div id="t2-rate-display" style="margin-top:10px;background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 16px;text-align:center;display:none;">
+        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">🔒 Tech 2 Locked Rate</div>
+        <div style="font-size:24px;font-weight:800;color:var(--dark-red);" id="t2-rate-value">$0.00 / hr</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:6px;padding:0 4px;">
+      <div></div>
+      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Hours</div>
+    </div>
+
+    <div class="hour-entry t2">
+      <div class="hour-label">Load / Unload</div>
+      <input type="number" class="hour-input" id="t2-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry t2">
+      <div class="hour-label">Travel Time</div>
+      <input type="number" class="hour-input" id="t2-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry t2">
+      <div class="hour-label">Standby Time</div>
+      <input type="number" class="hour-input" id="t2-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+    <div class="hour-entry t2">
+      <div class="hour-label">Spooling Labor</div>
+      <input type="number" class="hour-input" id="t2-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
+    </div>
+
+    <div style="background:#EAF5EA;border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:13px;font-weight:700;color:var(--muted);">Tech 2 Hours Subtotal</span>
+      <span style="font-size:20px;font-weight:800;color:var(--green);" id="t2-hours-sub">$0.00</span>
+    </div>
+
     <div class="divider"></div>
-    <div id="t2-miles"></div>
+
+    <div style="margin-top:4px;">
+      <div style="font-size:13px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Tech 2 — Spooler Miles</div>
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;">
+        <div style="background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">🔒 Mile Rate</div>
+          <div style="font-size:20px;font-weight:800;color:var(--dark-red);margin-top:2px;" id="t2-mile-rate-display">$0.00 / mi</div>
+        </div>
+        <input type="number" class="hour-input" id="t2-miles" min="0" step="1" value="" placeholder="0" inputmode="numeric" oninput="calcAll()">
+      </div>
+      <div style="text-align:right;margin-top:8px;font-size:15px;font-weight:700;color:var(--green);">
+        Miles Total: <span id="t2-miles-total">$0.00</span>
+      </div>
+    </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
     <button class="btn btn-outline" onclick="goTo(0)">← Back</button>
     <button class="btn btn-primary" onclick="goTo(2)">Next: Parts →</button>
   </div>
@@ -271,56 +433,101 @@
 
 <!-- ══ SCREEN 4: SUMMARY ══ -->
 <div class="screen" id="screen-3">
+
+  <!-- BIG TOTAL -->
   <div class="total-box">
     <div class="total-label">★ TOTAL INVOICE ★</div>
     <div class="total-amount" id="sum-grand">$0.00</div>
-    <div class="total-sub">Write this number in the TOTAL INVOICE box on the carbon copy</div>
+    <div class="total-sub">Write this in the TOTAL INVOICE box on the carbon copy</div>
   </div>
 
+  <!-- JOB INFO CHEAT SHEET -->
   <div class="cc-box">
-    <div class="cc-title">📋 Carbon Copy — Write These Numbers</div>
-    <div class="cc-row"><span class="cc-f">Invoice #</span><span class="cc-v" id="cc-inv">—</span></div>
-    <div class="cc-row"><span class="cc-f">Date</span><span class="cc-v" id="cc-date">—</span></div>
+    <div class="cc-title">📋 Job Info — Fill Top of Carbon Copy</div>
     <div class="cc-row"><span class="cc-f">Cable Company</span><span class="cc-v" id="cc-cust">—</span></div>
+    <div class="cc-row"><span class="cc-f">Cable Co. Location</span><span class="cc-v" id="cc-loc">—</span></div>
     <div class="cc-row"><span class="cc-f">Oil Company</span><span class="cc-v" id="cc-oil">—</span></div>
-    <div class="cc-row"><span class="cc-f">Well #</span><span class="cc-v" id="cc-well">—</span></div>
     <div class="cc-row"><span class="cc-f">Lease Name</span><span class="cc-v" id="cc-lease">—</span></div>
-    <div class="cc-row"><span class="cc-f">Start / Stop</span><span class="cc-v" id="cc-times">—</span></div>
+    <div class="cc-row"><span class="cc-f">Well #</span><span class="cc-v" id="cc-well">—</span></div>
+    <div class="cc-row"><span class="cc-f">Invoice #</span><span class="cc-v" id="cc-inv">—</span></div>
+    <div class="cc-row"><span class="cc-f">Dispatch Job No.</span><span class="cc-v" id="cc-dispatch">—</span></div>
+    <div class="cc-row"><span class="cc-f">Date</span><span class="cc-v" id="cc-date">—</span></div>
+    <div class="cc-row"><span class="cc-f">Spooler</span><span class="cc-v" id="cc-spooler">—</span></div>
+    <div class="cc-row"><span class="cc-f">Service Tech</span><span class="cc-v" id="cc-tech">—</span></div>
+    <div class="cc-row"><span class="cc-f">Start / Stop Time</span><span class="cc-v" id="cc-times">—</span></div>
+    <div class="cc-row"><span class="cc-f">Job Type</span><span class="cc-v" id="cc-jobtype">—</span></div>
   </div>
 
+  <!-- CARBON COPY ROW CHEAT SHEET -->
   <div class="sum-box">
-    <div class="sum-hdr">Tech 1 — Hours</div>
-    <div id="sum-t1-rows"></div>
-    <div class="sum-row hl"><span class="sl">Tech 1 Subtotal</span><span class="sv" id="sum-t1-tot">$0.00</span></div>
+    <div class="sum-hdr">✏️ Carbon Copy Rows — Tech 1</div>
+    <div style="display:grid;grid-template-columns:1fr 70px 80px 90px;gap:0;background:#1B3A6B;padding:8px 14px;">
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Row</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Hrs/Mi</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
+    </div>
+    <div id="cc-t1-rows"></div>
   </div>
 
+  <!-- TECH 2 OVERFLOW NOTE -->
   <div class="sum-box" id="sum-t2-box" style="display:none;">
-    <div class="sum-hdr" style="background:var(--green);">Tech 2 — Hours</div>
-    <div id="sum-t2-rows"></div>
+    <div class="sum-hdr" style="background:var(--green);">✏️ Overflow Rows — Tech 2 (write in spare rows)</div>
+    <div style="display:grid;grid-template-columns:1fr 70px 80px 90px;gap:0;background:#1E8449;padding:8px 14px;">
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Row</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Hrs/Mi</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
+    </div>
+    <div id="cc-t2-rows"></div>
     <div class="sum-row hl"><span class="sl">Tech 2 Subtotal</span><span class="sv" id="sum-t2-tot">$0.00</span></div>
   </div>
 
-  <div class="sum-box">
-    <div class="sum-hdr">Parts Used</div>
-    <div id="sum-parts-rows"></div>
-    <div class="sum-row hl"><span class="sl">Parts Subtotal</span><span class="sv" id="sum-parts-tot">$0.00</span></div>
+  <!-- BANDS SECTION -->
+  <div class="sum-box" id="sum-bs-box">
+    <div class="sum-hdr">✏️ Bands Section (bottom of carbon copy)</div>
+    <div style="display:grid;grid-template-columns:1fr 55px 80px 90px;gap:0;background:#1B3A6B;padding:8px 14px;">
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Item</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Qty</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
+      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
+    </div>
+    <div id="cc-bs-rows"><div class="sum-row"><span class="sl" style="font-style:italic;">No banding/spooling parts used</span></div></div>
+    <div class="sum-row hl"><span class="sl">Banding &amp; Spooling Parts Total</span><span class="sv" id="sum-bs-tot">$0.00</span></div>
   </div>
 
+  <!-- CT PARTS — single line on ticket -->
+  <div class="sum-box" id="sum-ct-box">
+    <div class="sum-hdr" style="background:var(--orange);">✏️ Cap String Total (write as one line on carbon copy)</div>
+    <div id="cc-ct-rows"><div class="sum-row"><span class="sl" style="font-style:italic;">No CT parts used</span></div></div>
+    <div class="sum-row hl" style="background:#FFF3E0;">
+      <span class="sl" style="color:var(--orange);">Write on ticket: "Cap String Total"</span>
+      <span class="sv" style="color:var(--orange);font-size:18px;" id="sum-ct-tot">$0.00</span>
+    </div>
+  </div>
+
+  <!-- GRAND TOTAL BREAKDOWN -->
   <div class="sum-box">
-    <div class="sum-hdr">Invoice Totals</div>
-    <div class="sum-row"><span class="sl">Tech 1</span><span class="sv" id="fin-t1">$0.00</span></div>
-    <div class="sum-row" id="fin-t2-row" style="display:none;"><span class="sl">Tech 2</span><span class="sv" id="fin-t2">$0.00</span></div>
-    <div class="sum-row"><span class="sl">Parts</span><span class="sv" id="fin-p">$0.00</span></div>
-    <div class="sum-row hl" style="padding:14px 18px;">
-      <span class="sl" style="font-size:16px;">TOTAL INVOICE</span>
-      <span class="sv" id="fin-grand" style="font-size:22px;color:var(--dark-red);">$0.00</span>
+    <div class="sum-hdr">Invoice Breakdown</div>
+    <div class="sum-row"><span class="sl">Tech 1 — Hours &amp; Miles</span><span class="sv" id="fin-t1">$0.00</span></div>
+    <div class="sum-row" id="fin-t2-row" style="display:none;"><span class="sl">Tech 2 — Hours &amp; Miles</span><span class="sv" id="fin-t2">$0.00</span></div>
+    <div class="sum-row"><span class="sl">Banding &amp; Spooling Parts</span><span class="sv" id="fin-bs">$0.00</span></div>
+    <div class="sum-row"><span class="sl">CT / Cap String Parts</span><span class="sv" id="fin-ct">$0.00</span></div>
+    <div class="sum-row hl" style="padding:16px 18px;">
+      <span class="sl" style="font-size:17px;">TOTAL INVOICE</span>
+      <span class="sv" id="fin-grand" style="font-size:24px;color:var(--dark-red);">$0.00</span>
     </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <button class="btn btn-outline" onclick="goTo(2)">← Back</button>
-    <button class="btn btn-green" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-green" onclick="window.print()">🖨 Print / PDF</button>
   </div>
+
+  <button class="btn btn-primary" id="submit-btn" onclick="submitJob()" style="background:var(--blue);margin-top:4px;">
+    📤 Submit Job to Office
+  </button>
+  <div id="submit-status" style="display:none;border-radius:12px;padding:14px 16px;text-align:center;font-weight:700;font-size:15px;margin-bottom:10px;"></div>
   <button class="btn btn-reset" onclick="resetAll()">Start New Job</button>
 </div>
 
@@ -435,90 +642,130 @@ function goTo(idx) {
 // ══════════════════════════════════════════
 // BUILD HOUR SLOTS
 // ══════════════════════════════════════════
-function buildSlots(cust) {
-  renderTechSlots('t1-slots','t1-miles','t1', cust, false);
-  renderTechSlots('t2-slots','t2-miles','t2', cust, true);
+
+// ══════════════════════════════════════════
+// JOB SETUP → RATE LOOKUP
+// ══════════════════════════════════════════
+// Rates are keyed by job-setup dropdown value.
+// Customer selection narrows which options show.
+// For non-Pioneer customers: single=CableTech, combo=ComboTrailer
+// Hour rate stored here; mileRate comes from MILE_RATES by customer.
+
+const SETUP_RATES = {
+  // Non-Pioneer customers (rates set dynamically by customer in jobSetupChanged)
+  single_day:         { label: 'Single Tech — Weekday',                    rateKey: 'single', period: 'day'   },
+  single_night:       { label: 'Single Tech — Night/Wknd/Holiday',         rateKey: 'single', period: 'night' },
+  combo_day:          { label: 'Combo Trailer — Weekday',                  rateKey: 'combo',  period: 'day'   },
+  combo_night:        { label: 'Combo Trailer — Night/Wknd/Holiday',       rateKey: 'combo',  period: 'night' },
+  bander_day:         { label: 'Bander Only — Weekday',                    rateKey: 'bander', period: 'day'   },
+  bander_night:       { label: 'Bander Only — Night/Wknd/Holiday',         rateKey: 'bander', period: 'night' },
+  // Pioneer-specific
+  pioneer_prod:       { label: 'Pioneer — Production Rig (Single)',        hourRate: 115, period: 'day'   },
+  pioneer_comp:       { label: 'Pioneer — Completion Rig (Single)',        hourRate: 135, period: 'day'   },
+  pioneer_combo_prod: { label: 'Pioneer — Combo Trailer Production Rig',   hourRate: 130, period: 'day'   },
+  pioneer_combo_comp: { label: 'Pioneer — Combo Trailer Completion Rig',   hourRate: 150, period: 'day'   },
+  pioneer_bander:     { label: 'Pioneer — Bander Only',                        hourRate:  90, period: 'day'   },
+};
+
+// Resolve hour rate from setup key + customer
+function resolveHourRate(setupKey, cust) {
+  if(!setupKey) return 0;
+  const setup = SETUP_RATES[setupKey];
+  if(!setup) return 0;
+  // Pioneer setups have hourRate hardcoded
+  if(setup.hourRate !== undefined) return setup.hourRate;
+  // Others look up from RATES table
+  const custRates = RATES[cust];
+  if(!custRates) return 0;
+  if(setup.rateKey === 'single') {
+    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('cable tech'));
+    return key ? (custRates[key][setup.period] || 0) : 0;
+  }
+  if(setup.rateKey === 'combo') {
+    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('combo'));
+    return key ? (custRates[key][setup.period] || 0) : 0;
+  }
+  if(setup.rateKey === 'bander') {
+    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('bander'));
+    return key ? (custRates[key][setup.period] || 0) : 0;
+  }
+  return 0;
 }
 
-function renderTechSlots(slotsId, milesId, p, cust, isTech2) {
-  const rateKeys = cust && RATES[cust] ? Object.keys(RATES[cust]) : [];
-  const mileRate = MILE_RATES[cust] || 3.00;
-  const cls = isTech2 ? 't2' : '';
-
-  document.getElementById(slotsId).innerHTML = SLOTS.map(s => `
-    <div class="hour-slot ${cls}">
-      <div class="slot-label">${s.label}</div>
-      <div class="dropdowns">
-        <select id="${p}-${s.id}-type" onchange="onRateChange('${p}','${s.id}','${cust}')">
-          <option value="">— Rate Type —</option>
-          ${rateKeys.map(k=>`<option value="${k}">${k}</option>`).join('')}
-        </select>
-        <select id="${p}-${s.id}-period" onchange="onRateChange('${p}','${s.id}','${cust}')">
-          <option value="day">☀️ Weekday</option>
-          <option value="night">🌙 Night / Wknd / Holiday</option>
-        </select>
-      </div>
-      <div class="rate-badge" id="${p}-${s.id}-badge">🔒 Select rate type above</div>
-      <div class="qty-area">
-        <div class="qty-box">
-          <label>Hours</label>
-          <input type="number" id="${p}-${s.id}-qty" min="0" step="0.25" value="0" inputmode="decimal" onchange="calcAll()">
-          <div class="line-total" id="${p}-${s.id}-lt">$0.00</div>
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  document.getElementById(milesId).innerHTML = `
-    <div class="miles-area">
-      <div>
-        <div class="slot-label" style="margin-bottom:6px;">Spooler Miles</div>
-        <div class="mile-rate-badge">🔒 $${mileRate.toFixed(2)} / mi</div>
-      </div>
-      <div class="qty-box">
-        <label>Miles</label>
-        <input type="number" id="${p}-miles" min="0" step="1" value="0" inputmode="numeric" onchange="calcAll()">
-        <div class="line-total" id="${p}-miles-lt">$0.00</div>
-      </div>
-    </div>`;
+function getMileRate(cust) {
+  return MILE_RATES[cust] || 3.00;
 }
 
 // ══════════════════════════════════════════
-// RATE CHANGE → LOCK IN
+// JOB SETUP CHANGED
 // ══════════════════════════════════════════
-function onRateChange(p, slotId, cust) {
-  const type   = document.getElementById(`${p}-${slotId}-type`).value;
-  const period = document.getElementById(`${p}-${slotId}-period`).value;
-  const badge  = document.getElementById(`${p}-${slotId}-badge`);
+function jobSetupChanged() {
+  const setupKey = document.getElementById('job-setup').value;
+  const cust     = document.getElementById('customer').value;
+  const hourRate = resolveHourRate(setupKey, cust);
+  const mileRate = getMileRate(cust);
 
-  if (!type || !cust || !RATES[cust] || !RATES[cust][type]) {
-    badge.textContent = '🔒 Select rate type above';
-    badge.classList.remove('locked');
-    calcAll(); return;
+  const display  = document.getElementById('master-rate-display');
+  const rateVal  = document.getElementById('master-rate-value');
+  const hoursCard= document.getElementById('hours-card');
+  const togRow   = document.getElementById('tech2-toggle-row');
+
+  if(!setupKey || hourRate === 0) {
+    display.style.display   = 'none';
+    hoursCard.style.display = 'none';
+    togRow.style.display    = 'none';
+    return;
   }
 
-  const rate = RATES[cust][type][period];
-  badge.textContent = `🔒 $${rate.toFixed(2)} / hr  —  LOCKED`;
-  badge.classList.add('locked');
+  // Show locked rate
+  display.style.display   = 'block';
+  hoursCard.style.display = 'block';
+  togRow.style.display    = 'flex';
+  rateVal.textContent     = '$' + hourRate.toFixed(2) + ' / hr';
+
+  // Update mile rate displays
+  const t1mr = document.getElementById('t1-mile-rate-display');
+  const t2mr = document.getElementById('t2-mile-rate-display');
+  if(t1mr) t1mr.textContent = '$' + mileRate.toFixed(2) + ' / mi';
+  if(t2mr) t2mr.textContent = '$' + mileRate.toFixed(2) + ' / mi';
+
   calcAll();
 }
 
-function getRate(p, slotId, cust) {
-  const type   = document.getElementById(`${p}-${slotId}-type`)?.value;
-  const period = document.getElementById(`${p}-${slotId}-period`)?.value;
-  if (!type || !cust || !RATES[cust] || !RATES[cust][type]) return 0;
-  return RATES[cust][type][period] || 0;
-}
+// ══════════════════════════════════════════
+// BUILD JOB SETUP OPTIONS BY CUSTOMER
+// ══════════════════════════════════════════
+function buildJobSetupOptions(cust) {
+  var sel = document.getElementById('job-setup');
+  sel.innerHTML = '<option value="">— Select Job Setup —</option>';
 
-// ══════════════════════════════════════════
-// CUSTOMER CHANGED
-// ══════════════════════════════════════════
-function customerChanged() {
-  const cust = document.getElementById('customer').value;
-  document.getElementById('hdr-cust').textContent = cust || 'No Customer';
-  buildSlots(cust);
-  buildParts(cust);
-  calcAll();
+  var options = [];
+
+  if(cust === 'Pioneer') {
+    options = [
+      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
+      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
+      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
+      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
+      { value: 'pioneer_bander',     label: 'Bander Only' },
+    ];
+  } else {
+    options = [
+      { value: 'single_day',   label: 'Cable Tech — Weekday' },
+      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
+      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
+      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
+      { value: 'bander_day',   label: 'Bander Only — Weekday' },
+      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
+    ];
+  }
+
+  options.forEach(function(o) {
+    var opt = document.createElement('option');
+    opt.value = o.value;
+    opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
 }
 
 // ══════════════════════════════════════════
@@ -528,7 +775,191 @@ function toggleTech2() {
   tech2Active = !tech2Active;
   document.getElementById('tog-t2').classList.toggle('on', tech2Active);
   document.getElementById('t2-card').style.display = tech2Active ? 'block' : 'none';
+  if(tech2Active) {
+    // Populate Tech 2 rate dropdown with same options as Tech 1
+    var cust = document.getElementById('customer').value;
+    populateT2Dropdown(cust);
+  }
   calcAll();
+}
+
+function populateT2Dropdown(cust) {
+  var sel = document.getElementById('t2-job-setup');
+  // Keep the "same as tech 1" option, then add all options
+  sel.innerHTML = '<option value="">— Same as Tech 1 —</option>';
+  var options = [];
+  if(cust === 'Pioneer') {
+    options = [
+      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
+      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
+      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
+      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
+      { value: 'pioneer_bander',     label: 'Bander Only' },
+    ];
+  } else {
+    options = [
+      { value: 'single_day',   label: 'Cable Tech — Weekday' },
+      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
+      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
+      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
+      { value: 'bander_day',   label: 'Bander Only — Weekday' },
+      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
+    ];
+  }
+  options.forEach(function(o) {
+    var opt = document.createElement('option');
+    opt.value = o.value;
+    opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
+}
+
+function tech2SetupChanged() {
+  var setupKey = document.getElementById('t2-job-setup').value;
+  var cust     = document.getElementById('customer').value;
+  var display  = document.getElementById('t2-rate-display');
+  var rateVal  = document.getElementById('t2-rate-value');
+
+  if(!setupKey) {
+    // Revert to same as Tech 1
+    display.style.display = 'none';
+    calcAll();
+    return;
+  }
+
+  var rate = resolveHourRate(setupKey, cust);
+  display.style.display = 'block';
+  rateVal.textContent   = '$' + rate.toFixed(2) + ' / hr';
+  calcAll();
+}
+
+function getTech2HourRate() {
+  var setupKey = document.getElementById('t2-job-setup').value;
+  var cust     = document.getElementById('customer').value;
+  // If no override selected, use Tech 1 rate
+  if(!setupKey) return getHourRate();
+  return resolveHourRate(setupKey, cust);
+}
+
+function customerChanged() {
+  const cust = document.getElementById('customer').value;
+  document.getElementById('hdr-cust').textContent = cust || 'No Customer';
+  // Rebuild job setup options for this customer
+  buildJobSetupOptions(cust);
+  document.getElementById('master-rate-display').style.display = 'none';
+  document.getElementById('hours-card').style.display = 'none';
+  document.getElementById('tech2-toggle-row').style.display = 'none';
+  buildParts(cust);
+  calcAll();
+}
+
+// ══════════════════════════════════════════
+// BUILD JOB SETUP OPTIONS BY CUSTOMER
+// ══════════════════════════════════════════
+function buildJobSetupOptions(cust) {
+  var sel = document.getElementById('job-setup');
+  sel.innerHTML = '<option value="">— Select Job Setup —</option>';
+
+  var options = [];
+
+  if(cust === 'Pioneer') {
+    options = [
+      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
+      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
+      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
+      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
+      { value: 'pioneer_bander',     label: 'Bander Only' },
+    ];
+  } else {
+    options = [
+      { value: 'single_day',   label: 'Cable Tech — Weekday' },
+      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
+      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
+      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
+      { value: 'bander_day',   label: 'Bander Only — Weekday' },
+      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
+    ];
+  }
+
+  options.forEach(function(o) {
+    var opt = document.createElement('option');
+    opt.value = o.value;
+    opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
+}
+
+// ══════════════════════════════════════════
+// TOGGLE TECH 2
+// ══════════════════════════════════════════
+function toggleTech2() {
+  tech2Active = !tech2Active;
+  document.getElementById('tog-t2').classList.toggle('on', tech2Active);
+  document.getElementById('t2-card').style.display = tech2Active ? 'block' : 'none';
+  if(tech2Active) {
+    // Populate Tech 2 rate dropdown with same options as Tech 1
+    var cust = document.getElementById('customer').value;
+    populateT2Dropdown(cust);
+  }
+  calcAll();
+}
+
+function populateT2Dropdown(cust) {
+  var sel = document.getElementById('t2-job-setup');
+  // Keep the "same as tech 1" option, then add all options
+  sel.innerHTML = '<option value="">— Same as Tech 1 —</option>';
+  var options = [];
+  if(cust === 'Pioneer') {
+    options = [
+      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
+      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
+      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
+      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
+      { value: 'pioneer_bander',     label: 'Bander Only' },
+    ];
+  } else {
+    options = [
+      { value: 'single_day',   label: 'Cable Tech — Weekday' },
+      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
+      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
+      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
+      { value: 'bander_day',   label: 'Bander Only — Weekday' },
+      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
+    ];
+  }
+  options.forEach(function(o) {
+    var opt = document.createElement('option');
+    opt.value = o.value;
+    opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
+}
+
+function tech2SetupChanged() {
+  var setupKey = document.getElementById('t2-job-setup').value;
+  var cust     = document.getElementById('customer').value;
+  var display  = document.getElementById('t2-rate-display');
+  var rateVal  = document.getElementById('t2-rate-value');
+
+  if(!setupKey) {
+    // Revert to same as Tech 1
+    display.style.display = 'none';
+    calcAll();
+    return;
+  }
+
+  var rate = resolveHourRate(setupKey, cust);
+  display.style.display = 'block';
+  rateVal.textContent   = '$' + rate.toFixed(2) + ' / hr';
+  calcAll();
+}
+
+function getTech2HourRate() {
+  var setupKey = document.getElementById('t2-job-setup').value;
+  var cust     = document.getElementById('customer').value;
+  // If no override selected, use Tech 1 rate
+  if(!setupKey) return getHourRate();
+  return resolveHourRate(setupKey, cust);
 }
 
 // ══════════════════════════════════════════
@@ -545,7 +976,7 @@ function addPartRow(containerId, prefix, i, name, uom, rate) {
   div.className = 'part-row';
   div.innerHTML = `
     <div><div class="part-name">${name}</div><div class="part-uom">${uom} · $${rate.toFixed(2)}</div></div>
-    <input type="number" class="part-qty" id="${prefix}-qty-${i}" min="0" step="1" value="0" inputmode="numeric" onchange="calcAll()">
+    <input type="number" class="part-qty" id="${prefix}-qty-${i}" min="0" step="1" value="0" inputmode="numeric" oninput="calcAll()">
     <div class="part-total" id="${prefix}-lt-${i}">$0.00</div>`;
   document.getElementById(containerId).appendChild(div);
 }
@@ -556,47 +987,87 @@ function addPartRow(containerId, prefix, i, name, uom, rate) {
 function gv(id) { return parseFloat(document.getElementById(id)?.value)||0; }
 function fmt(n) { return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
 
-function calcTech(p, cust) {
-  let total = 0;
-  SLOTS.forEach(s => {
-    const rate = getRate(p, s.id, cust);
-    const qty  = gv(`${p}-${s.id}-qty`);
-    const line = rate * qty;
-    total += line;
-    const el = document.getElementById(`${p}-${s.id}-lt`);
-    if(el) el.textContent = line>0 ? fmt(line) : '$0.00';
+function getHourRate() {
+  const setupKey = document.getElementById('job-setup').value;
+  const cust     = document.getElementById('customer').value;
+  return resolveHourRate(setupKey, cust);
+}
+
+function calcTech1() {
+  const rate = getHourRate();
+  const mileRate = getMileRate(document.getElementById('customer').value);
+  const slots = ['load','travel','standby','spool'];
+  let hoursTotal = 0;
+
+  slots.forEach(function(s) {
+    const input = document.getElementById('t1-' + s);
+    const hrs   = input ? (parseFloat(input.value) || 0) : 0;
+    hoursTotal += hrs * rate;
   });
-  const mr   = MILE_RATES[cust] || 3;
-  const mi   = gv(`${p}-miles`);
-  const mline= mr * mi;
-  total += mline;
-  const mel = document.getElementById(`${p}-miles-lt`);
-  if(mel) mel.textContent = mline>0 ? fmt(mline) : '$0.00';
-  return total;
+
+  const miInput  = document.getElementById('t1-miles');
+  const miles    = miInput ? (parseFloat(miInput.value) || 0) : 0;
+  const miTotal  = miles * mileRate;
+
+  const subEl = document.getElementById('t1-hours-sub');
+  if(subEl) subEl.textContent = '$' + hoursTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  const miTotEl = document.getElementById('t1-miles-total');
+  if(miTotEl) miTotEl.textContent = '$' + miTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  return hoursTotal + miTotal;
+}
+
+function calcTech2() {
+  if(!tech2Active) return 0;
+  const rate = getTech2HourRate();
+  const mileRate = getMileRate(document.getElementById('customer').value);
+  const slots = ['load','travel','standby','spool'];
+  let hoursTotal = 0;
+
+  slots.forEach(function(s) {
+    const input = document.getElementById('t2-' + s);
+    const hrs   = input ? (parseFloat(input.value) || 0) : 0;
+    hoursTotal += hrs * rate;
+  });
+
+  const miInput  = document.getElementById('t2-miles');
+  const miles    = miInput ? (parseFloat(miInput.value) || 0) : 0;
+  const miTotal  = miles * mileRate;
+
+  const subEl = document.getElementById('t2-hours-sub');
+  if(subEl) subEl.textContent = '$' + hoursTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  const miTotEl = document.getElementById('t2-miles-total');
+  if(miTotEl) miTotEl.textContent = '$' + miTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  return hoursTotal + miTotal;
 }
 
 function calcPartsSection(parts, prefix, cust) {
-  let total = 0;
-  parts.forEach((p,i) => {
-    const rate = cust && p.rates ? (p.rates[cust]||0) : (p.rate||0);
-    const qty  = gv(`${prefix}-qty-${i}`);
-    const line = rate * qty;
+  var total = 0;
+  parts.forEach(function(p, i) {
+    var rate = cust && p.rates ? (p.rates[cust] || 0) : (p.rate || 0);
+    var input = document.getElementById(prefix + '-qty-' + i);
+    var qty   = input ? (parseFloat(input.value) || 0) : 0;
+    var line  = rate * qty;
     total += line;
-    const el = document.getElementById(`${prefix}-lt-${i}`);
-    if(el) el.textContent = line>0 ? fmt(line) : '$0.00';
+    var el = document.getElementById(prefix + '-lt-' + i);
+    if(el) el.textContent = line > 0 ? ('$' + line.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')) : '$0.00';
   });
   return total;
 }
 
 function calcAll() {
-  const cust = document.getElementById('customer').value;
-  const t1 = calcTech('t1', cust);
-  const t2 = tech2Active ? calcTech('t2', cust) : 0;
-  const bs = calcPartsSection(BS_PARTS,'bs',cust);
-  const ct = calcPartsSection(CT_PARTS,'ct',null);
-  const grand = t1+t2+bs+ct;
-  const el = document.getElementById('sum-grand');
-  if(el) el.textContent = fmt(grand);
+  var cust  = document.getElementById('customer').value;
+  var t1    = calcTech1();
+  var t2    = calcTech2();
+  var bs    = calcPartsSection(BS_PARTS, 'bs', cust);
+  var ct    = calcPartsSection(CT_PARTS, 'ct', null);
+  var grand = t1 + t2 + bs + ct;
+  var fmtd  = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  var el    = document.getElementById('sum-grand');
+  if(el) el.textContent = fmtd;
 }
 
 // ══════════════════════════════════════════
@@ -604,64 +1075,383 @@ function calcAll() {
 // ══════════════════════════════════════════
 function buildSummary() {
   const cust = document.getElementById('customer').value;
-  document.getElementById('cc-inv').textContent   = document.getElementById('inv-num').value||'—';
-  document.getElementById('cc-date').textContent  = document.getElementById('inv-date').value||'—';
-  document.getElementById('cc-cust').textContent  = cust||'—';
-  document.getElementById('cc-oil').textContent   = document.getElementById('oil-co').value||'—';
-  document.getElementById('cc-well').textContent  = document.getElementById('well-num').value||'—';
-  document.getElementById('cc-lease').textContent = document.getElementById('lease-name').value||'—';
+
+  // ── Job info cheat sheet ──
+  const g = id => document.getElementById(id)?.value || '—';
+  document.getElementById('cc-cust').textContent     = cust || '—';
+  document.getElementById('cc-loc').textContent      = g('cable-loc');
+  document.getElementById('cc-oil').textContent      = g('oil-co');
+  document.getElementById('cc-lease').textContent    = g('lease-name');
+  document.getElementById('cc-well').textContent     = g('well-num');
+  document.getElementById('cc-inv').textContent      = g('inv-num');
+  document.getElementById('cc-dispatch').textContent = g('dispatch-num');
+  document.getElementById('cc-date').textContent     = g('inv-date');
+  document.getElementById('cc-spooler').textContent  = g('spooler-name');
+  document.getElementById('cc-tech').textContent     = g('tech-name');
+  document.getElementById('cc-jobtype').textContent  = g('job-type');
   const st = document.getElementById('start-time').value;
   const sp = document.getElementById('stop-time').value;
   document.getElementById('cc-times').textContent = (st&&sp)?`${st} – ${sp}`:(st||sp||'—');
 
-  function techSummary(p, containerId, totId) {
-    let total = 0;
-    let html  = '';
-    SLOTS.forEach(s => {
-      const rate = getRate(p, s.id, cust);
-      const qty  = gv(`${p}-${s.id}-qty`);
-      const line = rate * qty;
-      if(qty===0) return;
+  // ── Carbon copy row renderer ──
+  function ccRow(label, qty, unit, rate, line) {
+    return `<div style="display:grid;grid-template-columns:1fr 70px 80px 90px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--light);">
+      <span style="font-size:13px;font-weight:600;">${label}</span>
+      <span style="text-align:center;font-size:15px;font-weight:700;">${qty} ${unit}</span>
+      <span style="text-align:center;font-size:13px;font-weight:700;color:var(--blue);">${fmt(rate)}</span>
+      <span style="text-align:right;font-size:15px;font-weight:700;color:var(--dark-red);">${fmt(line)}</span>
+    </div>`;
+  }
+
+  // ── Tech rows builder ──
+  function buildTechRows(prefix, rowsId, totId) {
+    var rate     = getHourRate();
+    var mileRate = getMileRate(cust);
+    var setupKey = document.getElementById('job-setup').value;
+    var setup    = SETUP_RATES[setupKey] || {};
+    var slotMap  = {load:'Load / Unload', travel:'Travel Time', standby:'Standby Time', spool:'Spooling Labor'};
+    var rowHtml  = '';
+    var total    = 0;
+    ['load','travel','standby','spool'].forEach(function(s) {
+      var el  = document.getElementById(prefix + '-' + s);
+      var qty = el ? (parseFloat(el.value) || 0) : 0;
+      if(qty === 0) return;
+      var line = qty * rate;
       total += line;
-      const typeLabel  = document.getElementById(`${p}-${s.id}-type`)?.value || '';
-      const periodLabel= document.getElementById(`${p}-${s.id}-period`)?.value==='night'?'Night':'Day';
-      html += `<div class="sum-row"><span class="sl">${s.label} · ${typeLabel} · ${periodLabel}</span><span class="sv">${qty}h × ${fmt(rate)} = ${fmt(line)}</span></div>`;
+      rowHtml += ccRow(slotMap[s], qty, 'hrs', rate, line);
     });
-    const mr = MILE_RATES[cust]||3;
-    const mi = gv(`${p}-miles`);
-    const ml = mr*mi;
-    if(mi>0) { total+=ml; html+=`<div class="sum-row"><span class="sl">Mileage</span><span class="sv">${mi} mi × ${fmt(mr)} = ${fmt(ml)}</span></div>`; }
-    document.getElementById(containerId).innerHTML = html || '<div class="sum-row"><span class="sl" style="font-style:italic;">No hours entered</span></div>';
-    document.getElementById(totId).textContent = fmt(total);
+    var miEl  = document.getElementById(prefix + '-miles');
+    var miles = miEl ? (parseFloat(miEl.value) || 0) : 0;
+    if(miles > 0) {
+      var ml = miles * mileRate;
+      total += ml;
+      rowHtml += ccRow('Spooler Miles', miles, 'mi', mileRate, ml);
+    }
+    if(!rowHtml) rowHtml = '<div class="sum-row"><span class="sl" style="font-style:italic;">No hours or miles entered</span></div>';
+    var subFmt = '$' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    rowHtml += '<div style="display:grid;grid-template-columns:1fr 70px 80px 90px;align-items:center;padding:10px 14px;background:var(--light);"><span style="font-size:13px;font-weight:800;color:var(--text);grid-column:1/4;">Subtotal</span><span style="text-align:right;font-size:16px;font-weight:800;color:var(--dark-red);">' + subFmt + '</span></div>';
+    document.getElementById(rowsId).innerHTML = rowHtml;
+    if(totId) document.getElementById(totId).textContent = subFmt;
     return total;
   }
 
-  const t1 = techSummary('t1','sum-t1-rows','sum-t1-tot');
-  document.getElementById('sum-t2-box').style.display  = tech2Active?'block':'none';
-  document.getElementById('fin-t2-row').style.display  = tech2Active?'flex':'none';
-  const t2 = tech2Active ? techSummary('t2','sum-t2-rows','sum-t2-tot') : 0;
+  // ── Part row renderer ──
+  function partRow(name, qty, rate, line) {
+    return `<div style="display:grid;grid-template-columns:1fr 55px 80px 90px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--light);">
+      <span style="font-size:12px;font-weight:500;line-height:1.3;">${name}</span>
+      <span style="text-align:center;font-size:14px;font-weight:700;">${qty}</span>
+      <span style="text-align:center;font-size:12px;font-weight:700;color:var(--blue);">${fmt(rate)}</span>
+      <span style="text-align:right;font-size:14px;font-weight:700;color:var(--dark-red);">${fmt(line)}</span>
+    </div>`;
+  }
 
-  let partsHtml = '', partsTotal = 0;
+  const t1 = buildTechRows('t1', 'cc-t1-rows', null);
+
+  const hasTech2 = tech2Active;
+  document.getElementById('sum-t2-box').style.display = hasTech2 ? 'block' : 'none';
+  document.getElementById('fin-t2-row').style.display = hasTech2 ? 'flex' : 'none';
+  const t2 = hasTech2 ? buildTechRows('t2', 'cc-t2-rows', 'sum-t2-tot') : 0;
+
+  // ── Banding/Spooling parts ──
+  let bsHtml = '', bsTotal = 0;
   BS_PARTS.forEach((p,i) => {
-    const qty=gv(`bs-qty-${i}`); if(!qty) return;
-    const rate=cust&&p.rates?(p.rates[cust]||0):0; const line=rate*qty;
-    partsTotal+=line;
-    partsHtml+=`<div class="sum-row"><span class="sl">${p.name} × ${qty}</span><span class="sv" style="color:var(--dark-red);">${fmt(line)}</span></div>`;
+    const qty = gv(`bs-qty-${i}`); if(!qty) return;
+    const rate = cust && p.rates ? (p.rates[cust]||0) : 0;
+    const line = rate * qty;
+    bsTotal += line;
+    bsHtml += partRow(p.name, qty, rate, line);
   });
-  CT_PARTS.forEach((p,i) => {
-    const qty=gv(`ct-qty-${i}`); if(!qty) return;
-    const line=p.rate*qty; partsTotal+=line;
-    partsHtml+=`<div class="sum-row"><span class="sl">${p.name} × ${qty}</span><span class="sv" style="color:var(--dark-red);">${fmt(line)}</span></div>`;
-  });
-  document.getElementById('sum-parts-rows').innerHTML = partsHtml || '<div class="sum-row"><span class="sl" style="font-style:italic;">No parts used</span></div>';
-  document.getElementById('sum-parts-tot').textContent = fmt(partsTotal);
+  document.getElementById('cc-bs-rows').innerHTML = bsHtml ||
+    '<div class="sum-row"><span class="sl" style="font-style:italic;">No banding/spooling parts used</span></div>';
+  document.getElementById('sum-bs-tot').textContent = fmt(bsTotal);
 
-  const grand = t1+t2+partsTotal;
-  document.getElementById('fin-t1').textContent    = fmt(t1);
-  document.getElementById('fin-t2').textContent    = fmt(t2);
-  document.getElementById('fin-p').textContent     = fmt(partsTotal);
-  document.getElementById('fin-grand').textContent = fmt(grand);
-  document.getElementById('sum-grand').textContent = fmt(grand);
+  // ── CT parts — itemized list but single total for carbon copy ──
+  let ctHtml = '', ctTotal = 0;
+  CT_PARTS.forEach((p,i) => {
+    const qty = gv(`ct-qty-${i}`); if(!qty) return;
+    const line = p.rate * qty;
+    ctTotal += line;
+    ctHtml += partRow(p.name, qty, p.rate, line);
+  });
+  document.getElementById('cc-ct-rows').innerHTML = ctHtml ||
+    '<div class="sum-row"><span class="sl" style="font-style:italic;">No CT parts used</span></div>';
+  document.getElementById('sum-ct-tot').textContent = fmt(ctTotal);
+
+  // ── Totals ──
+  const grand = t1 + t2 + bsTotal + ctTotal;
+  document.getElementById('fin-t1').textContent = '$' + t1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('fin-t2').textContent = '$' + t2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('fin-bs').textContent = '$' + bsTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('fin-ct').textContent = '$' + ctTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('fin-grand').textContent = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('sum-grand').textContent = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+}
+
+// ══════════════════════════════════════════
+// SUBMIT JOB TO GOOGLE SHEET
+// ══════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaL6NUGlNmM5yhLkOn_4hxCYNzc68k0vPJ5m20StZ8olPNtKAuv2nykRO-vax-zTij/exec';
+
+function submitJob() {
+  var btn    = document.getElementById('submit-btn');
+  var status = document.getElementById('submit-status');
+  var cust   = document.getElementById('customer').value;
+
+  // Basic validation
+  if(!document.getElementById('inv-num').value) {
+    showStatus('error', '⚠️ Please enter an Invoice # before submitting');
+    return;
+  }
+  if(!cust) {
+    showStatus('error', '⚠️ Please select a Customer before submitting');
+    return;
+  }
+
+  btn.textContent = '⏳ Submitting...';
+  btn.disabled = true;
+
+  // Gather all job data
+  var setupKey  = document.getElementById('job-setup').value;
+  var t2Setup   = document.getElementById('t2-job-setup') ? document.getElementById('t2-job-setup').value : '';
+  var hourRate  = getHourRate();
+  var mileRate  = getMileRate(cust);
+
+  function getHrs(id) { var el=document.getElementById(id); return el?(parseFloat(el.value)||0):0; }
+
+  var t1Load    = getHrs('t1-load');
+  var t1Travel  = getHrs('t1-travel');
+  var t1Standby = getHrs('t1-standby');
+  var t1Spool   = getHrs('t1-spool');
+  var t1Miles   = getHrs('t1-miles');
+  var t1HrsTotal= (t1Load+t1Travel+t1Standby+t1Spool)*hourRate + t1Miles*mileRate;
+
+  var t2Load=0, t2Travel=0, t2Standby=0, t2Spool=0, t2Miles=0, t2HrsTotal=0;
+  if(tech2Active) {
+    var t2Rate = getTech2HourRate();
+    t2Load     = getHrs('t2-load');
+    t2Travel   = getHrs('t2-travel');
+    t2Standby  = getHrs('t2-standby');
+    t2Spool    = getHrs('t2-spool');
+    t2Miles    = getHrs('t2-miles');
+    t2HrsTotal = (t2Load+t2Travel+t2Standby+t2Spool)*t2Rate + t2Miles*mileRate;
+  }
+
+  // Parts totals
+  var bsTotal = 0;
+  BS_PARTS.forEach(function(p,i) {
+    var el=document.getElementById('bs-qty-'+i);
+    var qty=el?(parseFloat(el.value)||0):0;
+    var rate=cust&&p.rates?(p.rates[cust]||0):0;
+    bsTotal += qty*rate;
+  });
+  var ctTotal = 0;
+  CT_PARTS.forEach(function(p,i) {
+    var el=document.getElementById('ct-qty-'+i);
+    var qty=el?(parseFloat(el.value)||0):0;
+    ctTotal += qty*p.rate;
+  });
+
+  var grand = t1HrsTotal + t2HrsTotal + bsTotal + ctTotal;
+
+  var payload = {
+    invoiceNum:    document.getElementById('inv-num').value,
+    date:          document.getElementById('inv-date').value,
+    techName:      document.getElementById('tech-name').value,
+    spoolerName:   document.getElementById('spooler-name').value,
+    customer:      cust,
+    oilCompany:    document.getElementById('customer').value,
+    cableCompany:  document.getElementById('cable-co').value,
+    leaseName:     document.getElementById('lease-name').value,
+    wellNum:       document.getElementById('well-num').value,
+    dispatchNum:   document.getElementById('dispatch-num').value,
+    cableLocation: document.getElementById('cable-loc').value,
+    startTime:     document.getElementById('start-time').value,
+    stopTime:      document.getElementById('stop-time').value,
+    jobType:       document.getElementById('job-type').value,
+    notes:         document.getElementById('notes').value,
+    jobSetup:      setupKey,
+    hourRate:      hourRate,
+    mileRate:      mileRate,
+    t1Load:        t1Load,
+    t1Travel:      t1Travel,
+    t1Standby:     t1Standby,
+    t1Spool:       t1Spool,
+    t1Miles:       t1Miles,
+    t1HoursTotal:  t1HrsTotal,
+    tech2Active:   tech2Active,
+    t2Setup:       t2Setup,
+    t2Load:        t2Load,
+    t2Travel:      t2Travel,
+    t2Standby:     t2Standby,
+    t2Spool:       t2Spool,
+    t2Miles:       t2Miles,
+    t2HoursTotal:  t2HrsTotal,
+    bsPartsTotal:  bsTotal,
+    ctPartsTotal:  ctTotal,
+    grandTotal:    grand,
+    bsParts:       getBSPartsUsed(cust),
+    ctParts:       getCTPartsUsed(),
+  };
+
+  // Use GET with encoded data to avoid CORS issues with Apps Script
+  var encoded = encodeURIComponent(JSON.stringify(payload));
+  var url     = SCRIPT_URL + '?data=' + encoded;
+
+  fetch(url, { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    showStatus('success', '✅ Job submitted! Check your Google Sheet.');
+    btn.textContent  = '✅ Submitted';
+    btn.style.background = 'var(--green)';
+  })
+  .catch(function(err) {
+    showStatus('error', '❌ No internet connection. Try again.');
+    btn.textContent = '📤 Submit Job to Office';
+    btn.disabled = false;
+  });
+}
+
+function showStatus(type, msg) {
+  var el = document.getElementById('submit-status');
+  el.style.display = 'block';
+  el.textContent   = msg;
+  el.style.background = type === 'success' ? '#D5F5E3' : '#FADBD8';
+  el.style.color      = type === 'success' ? 'var(--green)' : 'var(--dark-red)';
+  el.style.border     = type === 'success' ? '2px solid #A9DFBF' : '2px solid #F1948A';
+}
+
+function getBSPartsUsed(cust) {
+  var used = [];
+  BS_PARTS.forEach(function(p,i) {
+    var el=document.getElementById('bs-qty-'+i);
+    var qty=el?(parseFloat(el.value)||0):0;
+    if(qty>0) {
+      var rate=cust&&p.rates?(p.rates[cust]||0):0;
+      used.push({ name:p.name, qty:qty, rate:rate, total:qty*rate });
+    }
+  });
+  return used;
+}
+
+function getCTPartsUsed() {
+  var used = [];
+  CT_PARTS.forEach(function(p,i) {
+    var el=document.getElementById('ct-qty-'+i);
+    var qty=el?(parseFloat(el.value)||0):0;
+    if(qty>0) used.push({ name:p.name, qty:qty, rate:p.rate, total:qty*p.rate });
+  });
+  return used;
+}
+
+// ══════════════════════════════════════════
+// GENERATE CT SUBMISSION SHEET
+// ══════════════════════════════════════════
+function generateCTSheet() {
+  var cust     = document.getElementById('customer').value;
+  var invNum   = document.getElementById('inv-num').value || '—';
+  var date     = document.getElementById('inv-date').value || '—';
+  var oilCo    = document.getElementById('oil-co').value || '—';
+  var wellNum  = document.getElementById('well-num').value || '—';
+  var cableCo  = cust || '—';
+
+  // Check if any CT parts used
+  var hasCT = false;
+  CT_PARTS.forEach(function(p,i) {
+    var el = document.getElementById('ct-qty-'+i);
+    if(el && parseFloat(el.value) > 0) hasXT = true;
+    if(el && parseFloat(el.value) > 0) hasCT = true;
+  });
+
+  // Build CT sheet HTML
+  var fmt = function(n) {
+    return '$' + parseFloat(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  };
+
+  var rows = '';
+  var total = 0;
+  CT_PARTS.forEach(function(p,i) {
+    var el  = document.getElementById('ct-qty-'+i);
+    var qty = el ? (parseFloat(el.value)||0) : 0;
+    var amt = qty * p.rate;
+    total  += amt;
+    var bg  = i % 2 === 0 ? '#F4F6F8' : '#FFFFFF';
+    rows += '<tr style="background:'+bg+';">';
+    rows += '<td style="padding:8px 10px;border:1px solid #ddd;font-size:13px;">'+p.name+'</td>';
+    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;">'+p.uom+'</td>';
+    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;font-weight:600;">'+fmt(p.rate)+'</td>';
+    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;">'+(qty > 0 ? qty : '')+'</td>';
+    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:13px;font-weight:700;color:'+(amt>0?'#8B0000':'#999')+';">'+(amt>0?fmt(amt):'$0.00')+'</td>';
+    rows += '</tr>';
+  });
+
+  var ctHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+  ctHTML += '<title>CT Submission - Invoice '+invNum+'</title>';
+  ctHTML += '<style>';
+  ctHTML += 'body{font-family:Arial,sans-serif;margin:30px;color:#1C2833;font-size:13px;}';
+  ctHTML += 'table{border-collapse:collapse;width:100%;}';
+  ctHTML += 'th{background:#1B3A6B;color:white;padding:9px 10px;text-align:left;font-size:12px;letter-spacing:0.5px;}';
+  ctHTML += 'th.right{text-align:right;} th.center{text-align:center;}';
+  ctHTML += '.info-table td{padding:6px 10px;border:1px solid #ddd;}';
+  ctHTML += '.info-table td.label{font-weight:bold;color:#555;background:#F4F6F8;width:160px;}';
+  ctHTML += '@media print{button{display:none!important;}}';
+  ctHTML += '</style></head><body>';
+
+  // Logo / Header
+  ctHTML += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">';
+  ctHTML += '<div>';
+  ctHTML += '<div style="font-size:22px;font-weight:900;color:#8B0000;letter-spacing:2px;">G&W TRUCKING & SERVICES</div>';
+  ctHTML += '<div style="font-size:12px;color:#777;margin-top:2px;">P.O. Box 10383 · Midland, Texas 79702</div>';
+  ctHTML += '<div style="font-size:12px;color:#777;">432-689-0426 Office · 325-573-4760 Fax</div>';
+  ctHTML += '</div>';
+  ctHTML += '<div style="text-align:right;">';
+  ctHTML += '<div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:1px;">CT Misc Parts Submission</div>';
+  ctHTML += '<div style="font-size:28px;font-weight:900;color:#1B3A6B;letter-spacing:1px;">'+invNum+'</div>';
+  ctHTML += '</div></div>';
+
+  ctHTML += '<div style="height:2px;background:#8B0000;margin-bottom:16px;"></div>';
+
+  // Job info
+  ctHTML += '<table class="info-table" style="margin-bottom:20px;">';
+  ctHTML += '<tr><td class="label">Cable Company</td><td>'+cableCo+'</td>';
+  ctHTML += '<td class="label">Invoice #</td><td>'+invNum+'</td></tr>';
+  ctHTML += '<tr><td class="label">Oil Company</td><td>'+oilCo+'</td>';
+  ctHTML += '<td class="label">Date</td><td>'+date+'</td></tr>';
+  ctHTML += '<tr><td class="label">Well Number</td><td>'+wellNum+'</td>';
+  ctHTML += '<td class="label">Location</td><td>'+(document.getElementById('cable-loc').value||'—')+'</td></tr>';
+  ctHTML += '</table>';
+
+  // Parts table
+  ctHTML += '<table>';
+  ctHTML += '<thead><tr>';
+  ctHTML += '<th>Miscellaneous CT Parts — All Customers</th>';
+  ctHTML += '<th class="center" style="width:100px;">UOM</th>';
+  ctHTML += '<th class="center" style="width:100px;">Customer Rate</th>';
+  ctHTML += '<th class="center" style="width:80px;">Quantity</th>';
+  ctHTML += '<th class="right" style="width:110px;">Amount Due</th>';
+  ctHTML += '</tr></thead><tbody>';
+  ctHTML += rows;
+  ctHTML += '</tbody></table>';
+
+  // Total row
+  ctHTML += '<table style="margin-top:0;">';
+  ctHTML += '<tr style="background:#8B0000;">';
+  ctHTML += '<td colspan="4" style="padding:12px 10px;color:white;font-weight:bold;font-size:15px;letter-spacing:1px;border:1px solid #8B0000;">TOTAL AMOUNT</td>';
+  ctHTML += '<td style="padding:12px 10px;text-align:right;color:white;font-weight:900;font-size:18px;border:1px solid #8B0000;">'+fmt(total)+'</td>';
+  ctHTML += '</tr></table>';
+
+  // Print button + note
+  ctHTML += '<div style="margin-top:20px;padding:12px;background:#FFFDE7;border:1px solid #F0D060;border-radius:6px;font-size:12px;color:#555;">';
+  ctHTML += '⚠️ This sheet is auto-generated from the G&W Field Billing Tool. Submit this document to billing along with the signed carbon copy invoice.';
+  ctHTML += '</div>';
+  ctHTML += '<div style="margin-top:14px;text-align:center;">';
+  ctHTML += '<button onclick="window.print()" style="padding:12px 30px;background:#1B3A6B;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-right:10px;">🖨 Print / Save as PDF</button>';
+  ctHTML += '<button onclick="window.close()" style="padding:12px 30px;background:#ECF0F1;color:#555;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✕ Close</button>';
+  ctHTML += '</div>';
+  ctHTML += '</body></html>';
+
+  // Open in new window
+  var win = window.open('', '_blank', 'width=850,height=900');
+  win.document.write(ctHTML);
+  win.document.close();
 }
 
 // ══════════════════════════════════════════
@@ -677,15 +1467,69 @@ function resetAll() {
   document.getElementById('t2-card').style.display='none';
   document.getElementById('hdr-cust').textContent='No Customer';
   document.getElementById('hdr-inv').textContent='No Invoice #';
-  buildSlots('');
   buildParts('Standard');
+  document.getElementById('job-setup').value = '';
+  document.getElementById('master-rate-display').style.display = 'none';
+  document.getElementById('hours-card').style.display = 'none';
+  document.getElementById('tech2-toggle-row').style.display = 'none';
   goTo(0);
 }
 
 // INIT
-document.getElementById('inv-date').valueAsDate = new Date();
-buildSlots('');
-buildParts('Standard');
+window.addEventListener('load', function() {
+  document.getElementById('inv-date').valueAsDate = new Date();
+  buildParts('Standard');
+  prefillFromURL();
+});
+
+// Pre-fill job fields from URL params so dispatcher can send a link to tech
+// Example URL: file.html?inv=306325&dispatch=44355000&oil=Pioneer&lease=Robb+Stone&well=2H
+function prefillFromURL() {
+  var params = new URLSearchParams(window.location.search);
+  var set = function(id, val) {
+    var el = document.getElementById(id);
+    if(el && val) el.value = val;
+  };
+  set('inv-num',     params.get('inv'));
+  set('dispatch-num',params.get('dispatch'));
+  set('inv-date',    params.get('date'));
+  set('cable-co',    params.get('cable'));
+  set('well-num',    params.get('well'));
+  set('lease-name',  params.get('lease'));
+  set('cable-loc',   params.get('loc'));
+  set('spooler-name',params.get('spooler'));
+  set('tech-name',   params.get('tech'));
+  set('notes',       params.get('notes'));
+
+  // Oil company / customer dropdown
+  var oil = params.get('oil');
+  if(oil) {
+    var sel = document.getElementById('customer');
+    for(var i=0; i<sel.options.length; i++) {
+      if(sel.options[i].value === oil) {
+        sel.selectedIndex = i;
+        customerChanged();
+        break;
+      }
+    }
+  }
+
+  // Update header if invoice number pre-filled
+  if(params.get('inv')) {
+    document.getElementById('hdr-inv').textContent = params.get('inv');
+  }
+
+  // Show pre-fill notice if any params present
+  if(params.toString()) {
+    var notice = document.createElement('div');
+    notice.style.cssText = 'background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:600;color:var(--green);';
+    notice.textContent = '✅ Job pre-filled by dispatcher. Review and complete hours + parts.';
+    var card = document.querySelector('#screen-0 .card');
+    if(card) card.insertBefore(notice, card.firstChild);
+  }
+}
 </script>
 </body>
 </html>
+
+
