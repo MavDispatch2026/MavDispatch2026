@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>G&W Dispatch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --red: #8B0000;
+    --blue: #1B3A6B;
+    --green: #1E8449;
+    --light: #F4F6F8;
+    --border: #D5D8DC;
+    --text: #1C2833;
+    --muted: #7F8C8D;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--light); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+
+  .header {
+    background: var(--red); color: white; padding: 18px 20px;
+    text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  }
+  .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; }
+  .header .sub { font-size: 12px; opacity: 0.75; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  .container { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+  .card { background: white; border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 14px; }
+  .card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--red); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--light); }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 16px;
+    font-weight: 500; color: var(--text); background: #EBF5FB; appearance: none;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--blue); background: white; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn {
+    display: block; width: 100%; padding: 18px; border: none;
+    border-radius: var(--radius); font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 2px; cursor: pointer; margin-bottom: 10px;
+  }
+  .btn-red { background: var(--red); color: white; box-shadow: 0 4px 14px rgba(139,0,0,0.35); }
+  .btn-blue { background: var(--blue); color: white; }
+  .btn-green { background: var(--green); color: white; }
+
+  /* Link output box */
+  .link-box { display: none; background: white; border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 14px; }
+  .link-box.show { display: block; }
+  .link-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .link-text {
+    background: #F4F6F8; border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px; font-size: 13px; word-break: break-all; color: var(--blue);
+    font-weight: 600; margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .copy-btn {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+
+  /* Preview box */
+  .preview { background: #EBF5FB; border: 2px solid #AED6F1; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .preview-title { font-size: 12px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .preview-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #AED6F1; font-size: 14px; }
+  .preview-row:last-child { border-bottom: none; }
+  .preview-row .pl { color: var(--muted); font-size: 12px; }
+  .preview-row .pv { font-weight: 700; }
+
+  /* SMS box */
+  .sms-box { background: #D5F5E3; border: 2px solid #A9DFBF; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .sms-title { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .sms-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+
+  .notice { background: #FFF9C4; border: 2px solid #F0D060; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #7D6608; margin-bottom: 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>G&W Dispatch</h1>
+  <div class="sub">Generate Pre-Fill Links for Techs</div>
+</div>
+
+<div class="container">
+
+  <div class="notice">
+    Fill in what you know — the tech gets a pre-filled form. They only need to enter hours and parts.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Job Details</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Invoice #</label>
+        <input type="text" id="inv" placeholder="e.g. 306325" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Dispatch Job #</label>
+        <input type="text" id="dispatch" placeholder="e.g. 44355000" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Oil Company — Who Are We Billing?</label>
+      <select id="oil" onchange="updatePreview()">
+        <option value="">— Select Oil Company —</option>
+        <option value="Pioneer">Pioneer / ExxonMobil</option>
+        <option value="Ovintiv">Ovintiv</option>
+        <option value="Diamondback">Diamondback</option>
+        <option value="Hibernia">Hibernia / Civitas</option>
+        <option value="Permian">Permian Resources</option>
+        <option value="Valiant">Valiant</option>
+        <option value="Flowco">Flowco</option>
+        <option value="Standard">Standard</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Cable Company</label>
+        <input type="text" id="cable" placeholder="e.g. Summit" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Well Number</label>
+        <input type="text" id="well" placeholder="e.g. 2H" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Lease Name</label>
+        <input type="text" id="lease" placeholder="e.g. Robb Stone" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="loc" placeholder="e.g. Midland" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tech Name</label>
+      <input type="text" id="tech" placeholder="e.g. Ramon" oninput="updatePreview()">
+    </div>
+
+    <div class="field">
+      <label>Notes for Tech</label>
+      <input type="text" id="notes" placeholder="e.g. Pick up cable at yard first" oninput="updatePreview()">
+    </div>
+  </div>
+
+  <button class="btn btn-red" onclick="generateLink()">⚡ Generate Dispatch Link</button>
+
+  <!-- OUTPUT -->
+  <div class="link-box" id="output">
+
+    <!-- Preview -->
+    <div class="preview">
+      <div class="preview-title">📋 Job Summary</div>
+      <div id="preview-rows"></div>
+    </div>
+
+    <!-- SMS Message -->
+    <div class="sms-box">
+      <div class="sms-title">📱 Copy & Text This to Your Tech</div>
+      <div class="sms-text" id="sms-text"></div>
+    </div>
+
+    <!-- Raw link -->
+    <div class="link-label">Raw Link</div>
+    <div class="link-text" id="link-display"></div>
+
+    <div class="copy-btn">
+      <button class="btn btn-blue" onclick="copyLink()" id="copy-btn">📋 Copy Link</button>
+      <button class="btn btn-green" onclick="copyText()" id="copy-text-btn">📱 Copy Full Text</button>
+    </div>
+  </div>
+
+  <button class="btn" style="background:#ECF0F1;color:#7F8C8D;font-size:16px;" onclick="resetForm()">Clear / New Job</button>
+
+</div>
+
+<script>
+const BASE_URL = 'https://mavdispatch2026.github.io/MavDispatch2026';
+
+function g(id) { return document.getElementById(id).value.trim(); }
+
+function generateLink() {
+  var inv      = g('inv');
+  var dispatch = g('dispatch');
+  var oil      = g('oil');
+  var cable    = g('cable');
+  var well     = g('well');
+  var lease    = g('lease');
+  var loc      = g('loc');
+  var tech     = g('tech');
+  var notes    = g('notes');
+
+  if(!inv && !dispatch && !oil) {
+    alert('Fill in at least Invoice #, Dispatch Job #, or Oil Company first.');
+    return;
+  }
+
+  var params = new URLSearchParams();
+  if(inv)      params.set('inv',      inv);
+  if(dispatch) params.set('dispatch', dispatch);
+  if(oil)      params.set('oil',      oil);
+  if(cable)    params.set('cable',    cable);
+  if(well)     params.set('well',     well);
+  if(lease)    params.set('lease',    lease);
+  if(loc)      params.set('loc',      loc);
+  if(tech)     params.set('tech',     tech);
+  if(notes)    params.set('notes',    notes);
+
+  var link = BASE_URL + '?' + params.toString();
+
+  document.getElementById('link-display').textContent = link;
+
+  // Build SMS text
+  var sms = 'G&W Job Dispatch 🛠️\n';
+  if(inv)      sms += 'Invoice #: ' + inv + '\n';
+  if(dispatch) sms += 'Dispatch #: ' + dispatch + '\n';
+  if(oil)      sms += 'Oil Company: ' + oil + '\n';
+  if(cable)    sms += 'Cable Co: ' + cable + '\n';
+  if(well)     sms += 'Well: ' + well + '\n';
+  if(lease)    sms += 'Lease: ' + lease + '\n';
+  if(notes)    sms += 'Notes: ' + notes + '\n';
+  sms += '\nOpen your billing form here:\n' + link;
+
+  document.getElementById('sms-text').textContent = sms;
+
+  document.getElementById('output').classList.add('show');
+  document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+
+  updatePreview();
+}
+
+function updatePreview() {
+  var fields = [
+    { label: 'Invoice #',     val: g('inv') },
+    { label: 'Dispatch #',    val: g('dispatch') },
+    { label: 'Oil Company',   val: g('oil') },
+    { label: 'Cable Company', val: g('cable') },
+    { label: 'Well #',        val: g('well') },
+    { label: 'Lease',         val: g('lease') },
+    { label: 'Tech',          val: g('tech') },
+    { label: 'Notes',         val: g('notes') },
+  ];
+  var html = '';
+  fields.forEach(function(f) {
+    if(f.val) {
+      html += '<div class="preview-row"><span class="pl">'+f.label+'</span><span class="pv">'+f.val+'</span></div>';
+    }
+  });
+  document.getElementById('preview-rows').innerHTML = html || '<div style="color:#999;font-style:italic;font-size:13px;">Fill in job details above</div>';
+}
+
+function copyLink() {
+  var link = document.getElementById('link-display').textContent;
+  navigator.clipboard.writeText(link).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = '✅ Copied!';
+    btn.style.background = 'var(--green)';
+    setTimeout(function() {
+      btn.textContent = '📋 Copy Link';
+      btn.style.background = 'var(--blue)';
+    }, 2000);
+  });
+}
+
+function copyText() {
+  var text = document.getElementById('sms-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-text-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(function() {
+      btn.textContent = '📱 Copy Full Text';
+    }, 2000);
+  });
+}
+
+function resetForm() {
+  document.querySelectorAll('input').forEach(function(el) { el.value = ''; });
+  document.querySelectorAll('select').forEach(function(el) { el.selectedIndex = 0; });
+  document.getElementById('output').classList.remove('show');
+  updatePreview();
+}
+</script>
+</body>
+</html>
