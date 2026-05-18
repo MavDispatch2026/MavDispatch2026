@@ -1,38 +1,691 @@
-G&W Trucking
-FIELD BILLING TOOL
-No Customer
-No Invoice #
-1 · JOB INFO
-2 · HOURS
-3 · PARTS
-4 · SUMMARY
-Job Information
-INVOICE #
-DISPATCH JOB #
-DATE
-OIL COMPANY — WHO ARE WE BILLING?
-        — Select Oil Company —
-        Pioneer / ExxonMobil
-        Ovintiv
-        Diamondback
-        Hibernia / Civitas
-        Permian Resources
-        Valiant
-        Flowco
-        Standard (Black Swan / Blue Ox / Centennial / Endeavor / Halliburton / High Peak / Moriah / Pinon / Reliance / TRP)
-      
-CABLE COMPANY
-WELL NUMBER
-LEASE NAME
-CABLE CO. LOCATION
-SPOOLER NAME
-SERVICE TECH
-START TIME
-STOP TIME
-JOB TYPE
-        PullRun
-        InstallCanceled
-        Combo SpoolerService
-      
-NOTES
-Next: Enter Hours →
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>G&W Field Billing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --red: #C0392B;
+    --dark-red: #8B0000;
+    --orange: #E67E22;
+    --green: #1E8449;
+    --blue: #1B3A6B;
+    --light: #F4F6F8;
+    --card: #FFFFFF;
+    --border: #D5D8DC;
+    --text: #1C2833;
+    --muted: #7F8C8D;
+    --input-bg: #EBF5FB;
+    --radius: 14px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--light); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+
+  .app-header {
+    background: var(--dark-red); color: white; padding: 18px 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  }
+  .app-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; }
+  .app-header .sub { font-size: 11px; opacity: 0.75; letter-spacing: 1px; text-transform: uppercase; }
+
+  .steps { display: flex; background: #6B0000; padding: 0 20px; }
+  .step-btn {
+    flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
+  }
+  .step-btn.active { color: white; border-bottom-color: var(--orange); }
+  .step-btn.done { color: rgba(255,255,255,0.75); }
+
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px;
+    color: var(--dark-red); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--light);
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; color: var(--text);
+    background: var(--input-bg); appearance: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--blue); background: white; }
+  .field select { cursor: pointer; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* HOUR SLOT */
+  .hour-slot { background: var(--light); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .hour-slot.t2 { background: #EAF5EA; }
+  .slot-label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .t2 .slot-label { color: var(--green); }
+
+  .dropdowns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .dropdowns select {
+    width: 100%; padding: 11px 12px; border: 2px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text); background: white; appearance: none; cursor: pointer;
+  }
+  .dropdowns select:focus { outline: none; border-color: var(--blue); }
+
+  .rate-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 8px; padding: 8px 14px; font-size: 15px; font-weight: 700;
+    margin-bottom: 10px; border: 2px solid #ccc; background: #ECF0F1; color: var(--muted);
+    transition: all 0.2s;
+  }
+  .rate-badge.locked { background: #D5F5E3; border-color: #A9DFBF; color: var(--green); }
+
+  .qty-area { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .qty-box { text-align: center; }
+  .qty-box label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .qty-box input {
+    width: 100%; padding: 14px 8px; border: 2px solid var(--border); border-radius: 8px;
+    font-size: 28px; font-weight: 700; text-align: center; background: white;
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+  }
+  .qty-box input:focus { outline: none; border-color: var(--blue); }
+  .line-total { font-size: 13px; font-weight: 600; color: var(--dark-red); margin-top: 5px; text-align: center; }
+
+  .miles-area { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; margin-top: 4px; }
+  .mile-rate-badge {
+    display: flex; align-items: center; gap: 6px; padding: 12px 14px;
+    background: #D5F5E3; border: 2px solid #A9DFBF; border-radius: 8px;
+    font-size: 14px; font-weight: 700; color: var(--green);
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 14px; border: 2px solid var(--border);
+  }
+  .toggle-label { font-size: 15px; font-weight: 600; }
+  .toggle-label .sub { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .toggle { width: 52px; height: 28px; background: #ccc; border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--green); }
+  .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .toggle.on::after { left: 27px; }
+
+  .part-row { display: grid; grid-template-columns: 1fr 72px 100px; gap: 8px; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--light); }
+  .part-row:last-child { border-bottom: none; }
+  .part-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
+  .part-uom { font-size: 11px; color: var(--muted); }
+  .part-qty { padding: 10px 8px; border: 2px solid var(--border); border-radius: 8px; font-size: 18px; font-weight: 700; text-align: center; background: white; width: 100%; font-family: 'DM Sans', sans-serif; }
+  .part-qty:focus { outline: none; border-color: var(--blue); }
+  .part-total { font-size: 13px; font-weight: 700; text-align: right; color: var(--dark-red); }
+
+  .total-box { background: var(--dark-red); border-radius: var(--radius); padding: 22px 20px; text-align: center; margin-bottom: 14px; box-shadow: 0 4px 20px rgba(139,0,0,0.4); }
+  .total-box .total-label { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: rgba(255,255,255,0.8); margin-bottom: 6px; }
+  .total-box .total-amount { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: white; letter-spacing: 2px; line-height: 1; }
+  .total-box .total-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+
+  .cc-box { background: #FFFDE7; border: 3px solid var(--orange); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; }
+  .cc-box .cc-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; color: var(--orange); margin-bottom: 12px; }
+  .cc-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #F0D060; font-size: 15px; }
+  .cc-row:last-child { border-bottom: none; }
+  .cc-row .cc-f { color: var(--muted); font-size: 13px; }
+  .cc-row .cc-v { font-weight: 700; font-size: 16px; }
+
+  .sum-box { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 14px; }
+  .sum-hdr { background: var(--dark-red); color: white; padding: 12px 18px; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; }
+  .sum-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--light); font-size: 14px; }
+  .sum-row:last-child { border-bottom: none; }
+  .sum-row .sl { color: var(--muted); font-weight: 500; }
+  .sum-row .sv { font-weight: 700; }
+  .sum-row.hl .sl { color: var(--text); font-weight: 700; }
+  .sum-row.hl .sv { color: var(--dark-red); font-size: 16px; }
+
+  .btn { display: block; width: 100%; padding: 18px; border: none; border-radius: var(--radius); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; cursor: pointer; margin-bottom: 10px; transition: transform 0.1s; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--dark-red); color: white; box-shadow: 0 4px 14px rgba(139,0,0,0.35); }
+  .btn-outline { background: white; color: var(--dark-red); border: 2px solid var(--dark-red); }
+  .btn-green { background: var(--green); color: white; }
+  .btn-reset { background: #ECF0F1; color: var(--muted); font-size: 16px; }
+
+  .notice { background: #EBF5FB; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--blue); margin-bottom: 14px; line-height: 1.5; }
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>G&W Trucking</h1>
+    <div class="sub">Field Billing Tool</div>
+  </div>
+  <div style="font-family:'Bebas Neue';font-size:13px;opacity:0.7;letter-spacing:1px;text-align:right;">
+    <div id="hdr-cust">No Customer</div>
+    <div id="hdr-inv" style="font-size:11px;">No Invoice #</div>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step-btn active" onclick="goTo(0)">1 · Job Info</div>
+  <div class="step-btn" onclick="goTo(1)">2 · Hours</div>
+  <div class="step-btn" onclick="goTo(2)">3 · Parts</div>
+  <div class="step-btn" onclick="goTo(3)">4 · Summary</div>
+</div>
+
+<!-- ══ SCREEN 1: JOB INFO ══ -->
+<div class="screen active" id="screen-0">
+  <div class="card">
+    <div class="card-title">Job Information</div>
+    <div class="field-row">
+      <div class="field"><label>Invoice #</label><input type="text" id="inv-num" placeholder="e.g. 306325" inputmode="numeric" oninput="document.getElementById('hdr-inv').textContent=this.value||'No Invoice #'"></div>
+      <div class="field"><label>Date</label><input type="date" id="inv-date"></div>
+    </div>
+    <div class="field">
+      <label>Customer (Cable Company)</label>
+      <select id="customer" onchange="customerChanged()">
+        <option value="">— Select Customer —</option>
+        <option value="Pioneer">Pioneer (Exxon)</option>
+        <option value="Ovintiv">Ovintiv</option>
+        <option value="Diamondback">Diamondback</option>
+        <option value="Hibernia">Hibernia / Civitas</option>
+        <option value="Permian">Permian Resources</option>
+        <option value="Valiant">Valiant</option>
+        <option value="Flowco">Flowco</option>
+        <option value="Standard">Standard (Black Swan / Blue Ox / Centennial / Endeavor / Halliburton / High Peak / Moriah / Pinon / Reliance / TRP)</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Oil Company</label><input type="text" id="oil-co"></div>
+      <div class="field"><label>Well Number</label><input type="text" id="well-num"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Lease Name</label><input type="text" id="lease-name"></div>
+      <div class="field"><label>Dispatch Job No.</label><input type="text" id="dispatch-num"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Spooler Name</label><input type="text" id="spooler-name"></div>
+      <div class="field"><label>Service Tech</label><input type="text" id="tech-name"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Start Time</label><input type="time" id="start-time"></div>
+      <div class="field"><label>Stop Time</label><input type="time" id="stop-time"></div>
+    </div>
+    <div class="field">
+      <label>Job Type</label>
+      <select id="job-type">
+        <option value="Pull">Pull</option><option value="Run">Run</option>
+        <option value="Install">Install</option><option value="Canceled">Canceled</option>
+        <option value="Combo Spooler">Combo Spooler</option><option value="Service">Service</option>
+      </select>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="notes" rows="2" style="resize:none;padding:12px 14px;font-size:15px;border:2px solid var(--border);border-radius:10px;font-family:inherit;background:var(--input-bg);width:100%;"></textarea></div>
+  </div>
+  <button class="btn btn-primary" onclick="goTo(1)">Next: Enter Hours →</button>
+</div>
+
+<!-- ══ SCREEN 2: HOURS ══ -->
+<div class="screen" id="screen-1">
+  <div class="notice">For each slot: pick the <strong>rate type</strong> and <strong>day or night</strong> — the rate locks in. Then enter hours. Each slot can have its own rate type.</div>
+
+  <div class="card">
+    <div class="card-title">Tech 1 — Hours &amp; Mileage</div>
+    <div id="t1-slots"></div>
+    <div class="divider"></div>
+    <div id="t1-miles"></div>
+  </div>
+
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">Second Tech on this job?</div>
+      <div class="toggle-label sub">Adds a full second set of hours + mileage</div>
+    </div>
+    <div class="toggle" id="tog-t2" onclick="toggleTech2()"></div>
+  </div>
+
+  <div class="card" id="t2-card" style="display:none;">
+    <div class="card-title" style="color:var(--green);">Tech 2 — Hours &amp; Mileage</div>
+    <div id="t2-slots"></div>
+    <div class="divider"></div>
+    <div id="t2-miles"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <button class="btn btn-outline" onclick="goTo(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(2)">Next: Parts →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: PARTS ══ -->
+<div class="screen" id="screen-2">
+  <div class="notice">Enter quantity used. Zero = not used. Rates auto-load for your customer.</div>
+  <div class="card"><div class="card-title">Banding / Spooling Parts</div><div id="parts-bs"></div></div>
+  <div class="card"><div class="card-title">CT Miscellaneous Parts</div><div id="parts-ct"></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <button class="btn btn-outline" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(3)">Summary →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: SUMMARY ══ -->
+<div class="screen" id="screen-3">
+  <div class="total-box">
+    <div class="total-label">★ TOTAL INVOICE ★</div>
+    <div class="total-amount" id="sum-grand">$0.00</div>
+    <div class="total-sub">Write this number in the TOTAL INVOICE box on the carbon copy</div>
+  </div>
+
+  <div class="cc-box">
+    <div class="cc-title">📋 Carbon Copy — Write These Numbers</div>
+    <div class="cc-row"><span class="cc-f">Invoice #</span><span class="cc-v" id="cc-inv">—</span></div>
+    <div class="cc-row"><span class="cc-f">Date</span><span class="cc-v" id="cc-date">—</span></div>
+    <div class="cc-row"><span class="cc-f">Cable Company</span><span class="cc-v" id="cc-cust">—</span></div>
+    <div class="cc-row"><span class="cc-f">Oil Company</span><span class="cc-v" id="cc-oil">—</span></div>
+    <div class="cc-row"><span class="cc-f">Well #</span><span class="cc-v" id="cc-well">—</span></div>
+    <div class="cc-row"><span class="cc-f">Lease Name</span><span class="cc-v" id="cc-lease">—</span></div>
+    <div class="cc-row"><span class="cc-f">Start / Stop</span><span class="cc-v" id="cc-times">—</span></div>
+  </div>
+
+  <div class="sum-box">
+    <div class="sum-hdr">Tech 1 — Hours</div>
+    <div id="sum-t1-rows"></div>
+    <div class="sum-row hl"><span class="sl">Tech 1 Subtotal</span><span class="sv" id="sum-t1-tot">$0.00</span></div>
+  </div>
+
+  <div class="sum-box" id="sum-t2-box" style="display:none;">
+    <div class="sum-hdr" style="background:var(--green);">Tech 2 — Hours</div>
+    <div id="sum-t2-rows"></div>
+    <div class="sum-row hl"><span class="sl">Tech 2 Subtotal</span><span class="sv" id="sum-t2-tot">$0.00</span></div>
+  </div>
+
+  <div class="sum-box">
+    <div class="sum-hdr">Parts Used</div>
+    <div id="sum-parts-rows"></div>
+    <div class="sum-row hl"><span class="sl">Parts Subtotal</span><span class="sv" id="sum-parts-tot">$0.00</span></div>
+  </div>
+
+  <div class="sum-box">
+    <div class="sum-hdr">Invoice Totals</div>
+    <div class="sum-row"><span class="sl">Tech 1</span><span class="sv" id="fin-t1">$0.00</span></div>
+    <div class="sum-row" id="fin-t2-row" style="display:none;"><span class="sl">Tech 2</span><span class="sv" id="fin-t2">$0.00</span></div>
+    <div class="sum-row"><span class="sl">Parts</span><span class="sv" id="fin-p">$0.00</span></div>
+    <div class="sum-row hl" style="padding:14px 18px;">
+      <span class="sl" style="font-size:16px;">TOTAL INVOICE</span>
+      <span class="sv" id="fin-grand" style="font-size:22px;color:var(--dark-red);">$0.00</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <button class="btn btn-outline" onclick="goTo(2)">← Back</button>
+    <button class="btn btn-green" onclick="window.print()">🖨 Print / Save PDF</button>
+  </div>
+  <button class="btn btn-reset" onclick="resetAll()">Start New Job</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const RATES = {
+  Pioneer: {
+    'Cable Tech — Production Rig':    { day:115, night:115 },
+    'Cable Tech — Completion Rig':    { day:135, night:135 },
+    'Combo Trailer — Production Rig': { day:130, night:130 },
+    'Combo Trailer — Completion Rig': { day:150, night:150 },
+    'Bander Only':                    { day: 90, night: 90 },
+  },
+  Ovintiv: {
+    'Cable Tech':    { day:115, night:140 },
+    'Combo Trailer': { day:135, night:155 },
+    'Bander Only':   { day: 90, night: 90 },
+  },
+  Diamondback: {
+    'Cable Tech':    { day:115, night:140 },
+    'Combo Trailer': { day:135, night:155 },
+    'Bander Only':   { day: 90, night: 90 },
+  },
+  Hibernia: {
+    'Cable Tech':    { day:103.50, night:126 },
+    'Combo Trailer': { day:121.50, night:155 },
+    'Bander Only':   { day: 81,   night: 81 },
+  },
+  Permian: {
+    'Cable Tech':    { day:103.50, night:126 },
+    'Combo Trailer': { day:121.50, night:139.50 },
+    'Bander Only':   { day: 81,   night: 81 },
+  },
+  Valiant: {
+    'Cable Tech':    { day:103.50, night:126 },
+    'Combo Trailer': { day:121.50, night:139.50 },
+    'Bander Only':   { day: 81,   night: 81 },
+  },
+  Flowco: {
+    'Cable Tech':    { day:115, night:140 },
+    'Combo Trailer': { day:135, night:155 },
+    'Bander Only':   { day: 90, night: 90 },
+  },
+  Standard: {
+    'Cable Tech':    { day:115, night:140 },
+    'Combo Trailer': { day:135, night:155 },
+    'Bander Only':   { day: 90, night: 90 },
+  },
+};
+
+const MILE_RATES = { Pioneer:3, Ovintiv:3, Diamondback:3, Hibernia:2.70, Permian:2.70, Valiant:2.70, Flowco:3, Standard:3 };
+
+const SLOTS = [
+  { id:'load',    label:'Load / Unload' },
+  { id:'travel',  label:'Travel Time' },
+  { id:'standby', label:'Standby Time' },
+  { id:'spool',   label:'Spooling Labor' },
+];
+
+const BS_PARTS = [
+  { name:"Cable Splicing Kit",             uom:"Each",    rates:{Pioneer:340,Ovintiv:340,Diamondback:340,Hibernia:306,Permian:306,Valiant:306,Flowco:340,Standard:340} },
+  { name:"Cable Splicing Kit (Lead-Lead)", uom:"Each",    rates:{Pioneer:433.50,Ovintiv:433.50,Diamondback:433.50,Hibernia:390.15,Permian:390.15,Valiant:390.15,Flowco:433.50,Standard:433.50} },
+  { name:"SST Bands",                      uom:"Each",    rates:{Pioneer:5.42,Ovintiv:5.42,Diamondback:5.42,Hibernia:5.42,Permian:4.88,Valiant:4.88,Flowco:5.00,Standard:5.00} },
+  { name:'SST Bands (3.5")',               uom:"Each",    rates:{Pioneer:6.09,Ovintiv:6.09,Diamondback:6.09,Hibernia:6.09,Permian:6.09,Valiant:6.09,Flowco:6.09,Standard:6.09} },
+  { name:'Monel Bands (2 3/8" - 2 7/8")', uom:"Each",    rates:{Pioneer:6.85,Ovintiv:7.00,Diamondback:7.00,Hibernia:6.30,Permian:6.30,Valiant:6.30,Flowco:6.30,Standard:7.00} },
+  { name:'Monel Bands (3.5")',             uom:"Each",    rates:{Pioneer:7.87,Ovintiv:7.87,Diamondback:7.87,Hibernia:7.87,Permian:7.87,Valiant:7.87,Flowco:7.87,Standard:7.87} },
+  { name:"Armor Repair",                   uom:"Each",    rates:{Pioneer:106.25,Ovintiv:106.25,Diamondback:106.25,Hibernia:106.25,Permian:95.63,Valiant:95.63,Flowco:106.25,Standard:106.25} },
+  { name:"Band Cutters",                   uom:"Each",    rates:{Pioneer:40.80,Ovintiv:40.80,Diamondback:41.00,Hibernia:41.00,Permian:36.90,Valiant:36.90,Flowco:41.00,Standard:41.00} },
+  { name:"Cable Clamp Install & Tools",    uom:"Each",    rates:{Pioneer:297.50,Ovintiv:300,Diamondback:300,Hibernia:270,Permian:270,Valiant:270,Flowco:300,Standard:300} },
+];
+
+const CT_PARTS = [
+  {name:'1/4" Tube Union',uom:"Each",rate:17.71},{name:'3/8" Tube Union',uom:"Each",rate:21.56},
+  {name:'3/8" x 1/4" Tube Union',uom:"Each",rate:20.79},{name:'Threaded Union 1/4"',uom:"Each",rate:17.50},
+  {name:'Threaded Union 3/8"',uom:"Each",rate:21.50},{name:'90° Elbow (1/4"T x 1/4"T)',uom:"Each",rate:21.56},
+  {name:'90° Elbow (3/8"T x 3/8"T)',uom:"Each",rate:22.72},{name:'1/4"T x 1/4"M NPT Male Conn.',uom:"Each",rate:12.32},
+  {name:'3/8"T x 1/4"M NPT Male Conn.',uom:"Each",rate:14.63},{name:'1/4"T x 3/8"M NPT Male Conn.',uom:"Each",rate:13.86},
+  {name:'3/8"T x 3/8"M NPT Male Conn.',uom:"Each",rate:15.02},{name:'1/4"T x 1/2"M NPT Male Conn.',uom:"Each",rate:16.17},
+  {name:'3/8"T x 1/2"M NPT Male Conn.',uom:"Each",rate:16.94},{name:'3/8"T x 3/4"M NPT Male Conn. 316',uom:"Each",rate:22.33},
+  {name:'1/4"T Union Tee',uom:"Each",rate:36.19},{name:'3/8"T Union Tee',uom:"Each",rate:38.50},
+  {name:'3/4"M x 1/2"F Hex Reducing Bushing',uom:"Each",rate:14.63},{name:'1/2"M x 3/8"F Hex Reducing Bushing',uom:"Each",rate:10.78},
+  {name:'3/8"M x 1/4"F Hex Reducing Bushing',uom:"Each",rate:9.24},{name:'1/4" Double Ferrule Set',uom:"Each",rate:4.00},
+  {name:'3/8" Double Ferrule Set',uom:"Each",rate:4.62},{name:'316 SS Chemical Injection Valve',uom:"Each",rate:762.30},
+  {name:'2 3/8" Injection Mandrel (Int/Ext)',uom:"Each",rate:650},{name:'2 7/8" Injection Mandrel (Int/Ext)',uom:"Each",rate:750},
+  {name:'ASV Manifold',uom:"Each",rate:778},{name:'1/4 2205 CT',uom:"Per Foot",rate:1.09},
+  {name:'3/8 2205 CT',uom:"Per Foot",rate:2.09},{name:'Injection Kit (mandrel+valve+manifold+5)',uom:"Each",rate:2378},
+  {name:'Pump Charge/Flush/Pressure Test Cap',uom:"Each",rate:300},{name:'Pressure Test Capillary Tubing',uom:"Each",rate:125},
+  {name:'Chemical Injection Manifold Kit',uom:"Each",rate:1007.57},
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let tech2Active = false;
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function goTo(idx) {
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  document.querySelectorAll('.step-btn').forEach((b,i) => {
+    b.classList.remove('active','done');
+    if(i===idx) b.classList.add('active');
+    else if(i<idx) b.classList.add('done');
+  });
+  if(idx===3) buildSummary();
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════════
+// BUILD HOUR SLOTS
+// ══════════════════════════════════════════
+function buildSlots(cust) {
+  renderTechSlots('t1-slots','t1-miles','t1', cust, false);
+  renderTechSlots('t2-slots','t2-miles','t2', cust, true);
+}
+
+function renderTechSlots(slotsId, milesId, p, cust, isTech2) {
+  const rateKeys = cust && RATES[cust] ? Object.keys(RATES[cust]) : [];
+  const mileRate = MILE_RATES[cust] || 3.00;
+  const cls = isTech2 ? 't2' : '';
+
+  document.getElementById(slotsId).innerHTML = SLOTS.map(s => `
+    <div class="hour-slot ${cls}">
+      <div class="slot-label">${s.label}</div>
+      <div class="dropdowns">
+        <select id="${p}-${s.id}-type" onchange="onRateChange('${p}','${s.id}','${cust}')">
+          <option value="">— Rate Type —</option>
+          ${rateKeys.map(k=>`<option value="${k}">${k}</option>`).join('')}
+        </select>
+        <select id="${p}-${s.id}-period" onchange="onRateChange('${p}','${s.id}','${cust}')">
+          <option value="day">☀️ Weekday</option>
+          <option value="night">🌙 Night / Wknd / Holiday</option>
+        </select>
+      </div>
+      <div class="rate-badge" id="${p}-${s.id}-badge">🔒 Select rate type above</div>
+      <div class="qty-area">
+        <div class="qty-box">
+          <label>Hours</label>
+          <input type="number" id="${p}-${s.id}-qty" min="0" step="0.25" value="0" inputmode="decimal" onchange="calcAll()">
+          <div class="line-total" id="${p}-${s.id}-lt">$0.00</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById(milesId).innerHTML = `
+    <div class="miles-area">
+      <div>
+        <div class="slot-label" style="margin-bottom:6px;">Spooler Miles</div>
+        <div class="mile-rate-badge">🔒 $${mileRate.toFixed(2)} / mi</div>
+      </div>
+      <div class="qty-box">
+        <label>Miles</label>
+        <input type="number" id="${p}-miles" min="0" step="1" value="0" inputmode="numeric" onchange="calcAll()">
+        <div class="line-total" id="${p}-miles-lt">$0.00</div>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// RATE CHANGE → LOCK IN
+// ══════════════════════════════════════════
+function onRateChange(p, slotId, cust) {
+  const type   = document.getElementById(`${p}-${slotId}-type`).value;
+  const period = document.getElementById(`${p}-${slotId}-period`).value;
+  const badge  = document.getElementById(`${p}-${slotId}-badge`);
+
+  if (!type || !cust || !RATES[cust] || !RATES[cust][type]) {
+    badge.textContent = '🔒 Select rate type above';
+    badge.classList.remove('locked');
+    calcAll(); return;
+  }
+
+  const rate = RATES[cust][type][period];
+  badge.textContent = `🔒 $${rate.toFixed(2)} / hr  —  LOCKED`;
+  badge.classList.add('locked');
+  calcAll();
+}
+
+function getRate(p, slotId, cust) {
+  const type   = document.getElementById(`${p}-${slotId}-type`)?.value;
+  const period = document.getElementById(`${p}-${slotId}-period`)?.value;
+  if (!type || !cust || !RATES[cust] || !RATES[cust][type]) return 0;
+  return RATES[cust][type][period] || 0;
+}
+
+// ══════════════════════════════════════════
+// CUSTOMER CHANGED
+// ══════════════════════════════════════════
+function customerChanged() {
+  const cust = document.getElementById('customer').value;
+  document.getElementById('hdr-cust').textContent = cust || 'No Customer';
+  buildSlots(cust);
+  buildParts(cust);
+  calcAll();
+}
+
+// ══════════════════════════════════════════
+// TOGGLE TECH 2
+// ══════════════════════════════════════════
+function toggleTech2() {
+  tech2Active = !tech2Active;
+  document.getElementById('tog-t2').classList.toggle('on', tech2Active);
+  document.getElementById('t2-card').style.display = tech2Active ? 'block' : 'none';
+  calcAll();
+}
+
+// ══════════════════════════════════════════
+// PARTS
+// ══════════════════════════════════════════
+function buildParts(cust) {
+  ['parts-bs','parts-ct'].forEach(id => document.getElementById(id).innerHTML='');
+  BS_PARTS.forEach((p,i) => addPartRow('parts-bs','bs',i,p.name,p.uom, cust&&p.rates?p.rates[cust]||0:0));
+  CT_PARTS.forEach((p,i) => addPartRow('parts-ct','ct',i,p.name,p.uom, p.rate));
+}
+
+function addPartRow(containerId, prefix, i, name, uom, rate) {
+  const div = document.createElement('div');
+  div.className = 'part-row';
+  div.innerHTML = `
+    <div><div class="part-name">${name}</div><div class="part-uom">${uom} · $${rate.toFixed(2)}</div></div>
+    <input type="number" class="part-qty" id="${prefix}-qty-${i}" min="0" step="1" value="0" inputmode="numeric" onchange="calcAll()">
+    <div class="part-total" id="${prefix}-lt-${i}">$0.00</div>`;
+  document.getElementById(containerId).appendChild(div);
+}
+
+// ══════════════════════════════════════════
+// CALC
+// ══════════════════════════════════════════
+function gv(id) { return parseFloat(document.getElementById(id)?.value)||0; }
+function fmt(n) { return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+function calcTech(p, cust) {
+  let total = 0;
+  SLOTS.forEach(s => {
+    const rate = getRate(p, s.id, cust);
+    const qty  = gv(`${p}-${s.id}-qty`);
+    const line = rate * qty;
+    total += line;
+    const el = document.getElementById(`${p}-${s.id}-lt`);
+    if(el) el.textContent = line>0 ? fmt(line) : '$0.00';
+  });
+  const mr   = MILE_RATES[cust] || 3;
+  const mi   = gv(`${p}-miles`);
+  const mline= mr * mi;
+  total += mline;
+  const mel = document.getElementById(`${p}-miles-lt`);
+  if(mel) mel.textContent = mline>0 ? fmt(mline) : '$0.00';
+  return total;
+}
+
+function calcPartsSection(parts, prefix, cust) {
+  let total = 0;
+  parts.forEach((p,i) => {
+    const rate = cust && p.rates ? (p.rates[cust]||0) : (p.rate||0);
+    const qty  = gv(`${prefix}-qty-${i}`);
+    const line = rate * qty;
+    total += line;
+    const el = document.getElementById(`${prefix}-lt-${i}`);
+    if(el) el.textContent = line>0 ? fmt(line) : '$0.00';
+  });
+  return total;
+}
+
+function calcAll() {
+  const cust = document.getElementById('customer').value;
+  const t1 = calcTech('t1', cust);
+  const t2 = tech2Active ? calcTech('t2', cust) : 0;
+  const bs = calcPartsSection(BS_PARTS,'bs',cust);
+  const ct = calcPartsSection(CT_PARTS,'ct',null);
+  const grand = t1+t2+bs+ct;
+  const el = document.getElementById('sum-grand');
+  if(el) el.textContent = fmt(grand);
+}
+
+// ══════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════
+function buildSummary() {
+  const cust = document.getElementById('customer').value;
+  document.getElementById('cc-inv').textContent   = document.getElementById('inv-num').value||'—';
+  document.getElementById('cc-date').textContent  = document.getElementById('inv-date').value||'—';
+  document.getElementById('cc-cust').textContent  = cust||'—';
+  document.getElementById('cc-oil').textContent   = document.getElementById('oil-co').value||'—';
+  document.getElementById('cc-well').textContent  = document.getElementById('well-num').value||'—';
+  document.getElementById('cc-lease').textContent = document.getElementById('lease-name').value||'—';
+  const st = document.getElementById('start-time').value;
+  const sp = document.getElementById('stop-time').value;
+  document.getElementById('cc-times').textContent = (st&&sp)?`${st} – ${sp}`:(st||sp||'—');
+
+  function techSummary(p, containerId, totId) {
+    let total = 0;
+    let html  = '';
+    SLOTS.forEach(s => {
+      const rate = getRate(p, s.id, cust);
+      const qty  = gv(`${p}-${s.id}-qty`);
+      const line = rate * qty;
+      if(qty===0) return;
+      total += line;
+      const typeLabel  = document.getElementById(`${p}-${s.id}-type`)?.value || '';
+      const periodLabel= document.getElementById(`${p}-${s.id}-period`)?.value==='night'?'Night':'Day';
+      html += `<div class="sum-row"><span class="sl">${s.label} · ${typeLabel} · ${periodLabel}</span><span class="sv">${qty}h × ${fmt(rate)} = ${fmt(line)}</span></div>`;
+    });
+    const mr = MILE_RATES[cust]||3;
+    const mi = gv(`${p}-miles`);
+    const ml = mr*mi;
+    if(mi>0) { total+=ml; html+=`<div class="sum-row"><span class="sl">Mileage</span><span class="sv">${mi} mi × ${fmt(mr)} = ${fmt(ml)}</span></div>`; }
+    document.getElementById(containerId).innerHTML = html || '<div class="sum-row"><span class="sl" style="font-style:italic;">No hours entered</span></div>';
+    document.getElementById(totId).textContent = fmt(total);
+    return total;
+  }
+
+  const t1 = techSummary('t1','sum-t1-rows','sum-t1-tot');
+  document.getElementById('sum-t2-box').style.display  = tech2Active?'block':'none';
+  document.getElementById('fin-t2-row').style.display  = tech2Active?'flex':'none';
+  const t2 = tech2Active ? techSummary('t2','sum-t2-rows','sum-t2-tot') : 0;
+
+  let partsHtml = '', partsTotal = 0;
+  BS_PARTS.forEach((p,i) => {
+    const qty=gv(`bs-qty-${i}`); if(!qty) return;
+    const rate=cust&&p.rates?(p.rates[cust]||0):0; const line=rate*qty;
+    partsTotal+=line;
+    partsHtml+=`<div class="sum-row"><span class="sl">${p.name} × ${qty}</span><span class="sv" style="color:var(--dark-red);">${fmt(line)}</span></div>`;
+  });
+  CT_PARTS.forEach((p,i) => {
+    const qty=gv(`ct-qty-${i}`); if(!qty) return;
+    const line=p.rate*qty; partsTotal+=line;
+    partsHtml+=`<div class="sum-row"><span class="sl">${p.name} × ${qty}</span><span class="sv" style="color:var(--dark-red);">${fmt(line)}</span></div>`;
+  });
+  document.getElementById('sum-parts-rows').innerHTML = partsHtml || '<div class="sum-row"><span class="sl" style="font-style:italic;">No parts used</span></div>';
+  document.getElementById('sum-parts-tot').textContent = fmt(partsTotal);
+
+  const grand = t1+t2+partsTotal;
+  document.getElementById('fin-t1').textContent    = fmt(t1);
+  document.getElementById('fin-t2').textContent    = fmt(t2);
+  document.getElementById('fin-p').textContent     = fmt(partsTotal);
+  document.getElementById('fin-grand').textContent = fmt(grand);
+  document.getElementById('sum-grand').textContent = fmt(grand);
+}
+
+// ══════════════════════════════════════════
+// RESET
+// ══════════════════════════════════════════
+function resetAll() {
+  if(!confirm('Start a new job? All current data will be cleared.')) return;
+  document.querySelectorAll('input').forEach(el=>el.value=el.type==='number'?0:'');
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.querySelectorAll('textarea').forEach(el=>el.value='');
+  tech2Active=false;
+  document.getElementById('tog-t2').classList.remove('on');
+  document.getElementById('t2-card').style.display='none';
+  document.getElementById('hdr-cust').textContent='No Customer';
+  document.getElementById('hdr-inv').textContent='No Invoice #';
+  buildSlots('');
+  buildParts('Standard');
+  goTo(0);
+}
+
+// INIT
+document.getElementById('inv-date').valueAsDate = new Date();
+buildSlots('');
+buildParts('Standard');
+</script>
+</body>
+</html>
