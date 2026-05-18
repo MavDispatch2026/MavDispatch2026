@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Maverick — Location Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --red: #8B0000;
+    --blue: #1B3A6B;
+    --green: #1E8449;
+    --orange: #E67E22;
+    --light: #F4F6F8;
+    --card: #FFFFFF;
+    --border: #D5D8DC;
+    --text: #1C2833;
+    --muted: #7F8C8D;
+    --radius: 14px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--light); color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+
+  /* LOCK SCREEN */
+  #lock-screen {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: var(--red); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lock-box {
+    background: white; border-radius: 16px; padding: 32px 28px;
+    width: 90%; max-width: 360px; text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .lock-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--red); margin-bottom: 4px; }
+  .lock-sub { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+  .lock-icon { font-size: 40px; margin-bottom: 16px; }
+  .lock-input {
+    width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 10px;
+    font-size: 18px; text-align: center; font-family: 'DM Sans', sans-serif; margin-bottom: 10px;
+  }
+  .lock-error { color: var(--red); font-size: 13px; font-weight: 700; margin-bottom: 10px; display: none; }
+  .lock-btn {
+    width: 100%; padding: 16px; background: var(--red); color: white; border: none;
+    border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    letter-spacing: 2px; cursor: pointer;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--blue); color: white; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  }
+  .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; }
+  .header .sub { font-size: 11px; opacity: 0.75; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* TABS */
+  .tabs { display: flex; background: #142d54; }
+  .tab {
+    flex: 1; padding: 12px 4px; text-align: center; font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active { color: white; border-bottom-color: var(--orange); }
+
+  /* SCREENS */
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; }
+  .card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--blue); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--light); }
+
+  /* FIELDS */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 13px 16px; border: 2px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    color: var(--text); background: #EBF5FB; appearance: none;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--blue); background: white; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* BUTTONS */
+  .btn {
+    display: block; width: 100%; padding: 16px; border: none; border-radius: var(--radius);
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+    cursor: pointer; margin-bottom: 10px; transition: transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-red { background: var(--red); color: white; box-shadow: 0 4px 14px rgba(139,0,0,0.35); }
+  .btn-blue { background: var(--blue); color: white; }
+  .btn-green { background: var(--green); color: white; }
+  .btn-orange { background: var(--orange); color: white; }
+  .btn-outline { background: white; color: var(--blue); border: 2px solid var(--blue); }
+  .btn-sm {
+    display: inline-block; padding: 10px 16px; border: none; border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1px;
+    cursor: pointer; margin-right: 8px; margin-bottom: 8px;
+  }
+
+  /* NOTICE */
+  .notice { background: #EBF5FB; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--blue); margin-bottom: 14px; line-height: 1.5; }
+  .notice-green { background: #D5F5E3; border-left-color: var(--green); color: var(--green); }
+  .notice-orange { background: #FDEBD0; border-left-color: var(--orange); color: var(--orange); }
+
+  /* COORD DISPLAY */
+  .coord-box {
+    background: #D5F5E3; border: 2px solid #A9DFBF; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 14px; display: none;
+  }
+  .coord-box.show { display: block; }
+  .coord-label { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .coord-value { font-size: 18px; font-weight: 800; color: var(--text); }
+
+  /* PHOTO UPLOAD */
+  .photo-box {
+    border: 3px dashed var(--border); border-radius: var(--radius);
+    padding: 24px 16px; text-align: center; margin-bottom: 14px;
+    background: white; cursor: pointer; transition: all 0.2s;
+  }
+  .photo-box:hover { border-color: var(--blue); background: #EBF5FB; }
+  .photo-box.has-photo { border-color: var(--green); border-style: solid; background: #D5F5E3; }
+  .photo-icon { font-size: 36px; margin-bottom: 8px; }
+  .photo-label { font-size: 14px; font-weight: 600; color: var(--muted); }
+  .photo-preview { max-width: 100%; border-radius: 10px; margin-top: 10px; display: none; }
+
+  /* SEARCH RESULTS */
+  .search-result {
+    background: white; border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+  }
+  .search-result:hover { border-color: var(--blue); background: #EBF5FB; }
+  .result-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .result-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .result-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; margin-top: 6px;
+    background: #EBF5FB; color: var(--blue);
+  }
+
+  /* WELL CARD */
+  .well-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px; margin-bottom: 10px; border-left: 4px solid var(--blue);
+  }
+  .well-name { font-size: 16px; font-weight: 800; color: var(--text); }
+  .well-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .well-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
+
+  /* STATUS */
+  .status-box {
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+    font-size: 14px; font-weight: 600; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+  .status-success { background: #D5F5E3; border: 2px solid #A9DFBF; color: var(--green); }
+  .status-error { background: #FADBD8; border: 2px solid #F1948A; color: var(--red); }
+  .status-loading { background: #EBF5FB; border: 2px solid #AED6F1; color: var(--blue); }
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-title">MAVERICK SPOOLING</div>
+    <div class="lock-sub">Location & Route Tool</div>
+    <div class="lock-icon">📍</div>
+    <input type="password" id="pw-input" class="lock-input" placeholder="Enter password"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="pw-error" class="lock-error">❌ Wrong password. Try again.</div>
+    <button class="lock-btn" onclick="checkPassword()">UNLOCK</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>📍 Maverick Location</h1>
+    <div class="sub">Route & Well Encyclopedia</div>
+  </div>
+  <div id="user-badge" style="font-size:12px;opacity:0.8;text-align:right;"></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">🗺️ Route</div>
+  <div class="tab" onclick="switchTab(1)">🔍 Find Job</div>
+  <div class="tab" onclick="switchTab(2)">📚 Wells</div>
+</div>
+
+<!-- ══ SCREEN 1: ROUTE ══ -->
+<div class="screen active" id="screen-0">
+
+  <div class="notice">
+    Set your start point, pick a cable shop, drop your well pin — then open Maps and drive. Come back to upload your route screenshot.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Starting Point</div>
+    <div class="field">
+      <label>Start Location</label>
+      <select id="start-point">
+        <option value="2703 S County Rd 1207, Midland, TX 79706">GW Yard — 2703 S County Rd 1207, Midland TX</option>
+        <option value="custom">Custom / My Current Location</option>
+      </select>
+    </div>
+    <div id="custom-start" style="display:none;">
+      <div class="field">
+        <label>Custom Start Address</label>
+        <input type="text" id="custom-start-addr" placeholder="Enter your starting address">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cable Shop</div>
+    <div class="field">
+      <label>Select Cable Shop / Yard</label>
+      <select id="cable-shop">
+        <option value="">— Select Cable Shop —</option>
+        <option value="6206 S County Rd 1270, Midland, TX 79706">Innovex — Midland TX</option>
+        <option value="801 SW Mustang Dr, Andrews, TX 79714">Summit — Andrews TX</option>
+        <option value="2340 US-385, Andrews, TX 79714">Baker Hughes — Andrews TX</option>
+        <option value="2806 N County Rd 1148, Midland, TX 79705">Valiant — Midland TX</option>
+        <option value="12220 TX-191 Frontage, Midland, TX 79707">Endurance Lift Solutions — Midland TX</option>
+        <option value="1440 Windway St, Odessa, TX 79763">ChampionX — Odessa TX</option>
+        <option value="custom_shop">Other (type address)</option>
+      </select>
+    </div>
+    <div id="custom-shop-div" style="display:none;">
+      <div class="field">
+        <label>Custom Cable Shop Address</label>
+        <input type="text" id="custom-shop-addr" placeholder="Enter cable shop address">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Job / Well Location</div>
+
+    <!-- Search saved wells -->
+    <div class="field">
+      <label>Search Saved Wells</label>
+      <input type="text" id="well-search-route" placeholder="Type well name, lease, or job #..." oninput="searchWellsRoute()">
+    </div>
+    <div id="well-search-results-route"></div>
+
+    <div class="divider"></div>
+
+    <!-- OR get current location -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <button class="btn btn-blue" style="font-size:15px;padding:14px;" onclick="getCurrentLocation()">📍 Use My Location</button>
+      <button class="btn btn-outline" style="font-size:15px;padding:14px;" onclick="showPasteCoords()">📋 Paste Maps Link</button>
+    </div>
+
+    <!-- Paste Google Maps link -->
+    <div id="paste-coords-div" style="display:none;">
+      <div class="field">
+        <label>Paste Google Maps Link</label>
+        <input type="text" id="maps-link-input" placeholder="Paste Google Maps URL here..." oninput="extractCoordsFromLink()">
+      </div>
+    </div>
+
+    <!-- Manual coords -->
+    <div class="field">
+      <label>Or Enter Coordinates Manually</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input type="number" id="manual-lat" placeholder="Latitude" step="0.000001">
+        <input type="number" id="manual-lng" placeholder="Longitude" step="0.000001">
+      </div>
+      <button class="btn-sm" style="background:var(--blue);color:white;margin-top:8px;" onclick="useManualCoords()">Use These Coords</button>
+    </div>
+
+    <!-- Coord display -->
+    <div class="coord-box" id="job-coord-display">
+      <div class="coord-label">📍 Job Location Locked</div>
+      <div class="coord-value" id="job-coord-value">—</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;" id="job-well-name-display"></div>
+    </div>
+
+    <!-- Save to encyclopedia -->
+    <div id="save-well-div" style="display:none;">
+      <div class="divider"></div>
+      <div class="notice notice-orange">💾 New location — save to Well Encyclopedia?</div>
+      <div class="field">
+        <label>Well Name</label>
+        <input type="text" id="new-well-name" placeholder="e.g. Robb Stone W34B">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Lease Name</label>
+          <input type="text" id="new-well-lease" placeholder="e.g. Robb Stone">
+        </div>
+        <div class="field">
+          <label>Oil Company</label>
+          <select id="new-well-customer">
+            <option value="">— Select —</option>
+            <option value="Pioneer">Pioneer / ExxonMobil</option>
+            <option value="Ovintiv">Ovintiv</option>
+            <option value="Diamondback">Diamondback</option>
+            <option value="Hibernia">Hibernia / Civitas</option>
+            <option value="Permian">Permian Resources</option>
+            <option value="Valiant">Valiant</option>
+            <option value="Flowco">Flowco</option>
+            <option value="Standard">Standard</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="saveNewWell()">💾 Save to Encyclopedia</button>
+    </div>
+  </div>
+
+  <!-- Open Maps Button -->
+  <button class="btn btn-red" id="open-maps-btn" onclick="openMapsRoute()" style="display:none;">
+    🗺️ Open Route in Google Maps
+  </button>
+
+  <!-- Route Screenshot Upload -->
+  <div class="card" id="screenshot-card" style="display:none;">
+    <div class="card-title">Route Screenshot</div>
+    <div class="notice">After driving your route, screenshot the completed map and upload it here.</div>
+
+    <div class="field">
+      <label>Invoice # (to link this route to a job)</label>
+      <input type="text" id="route-invoice-num" placeholder="e.g. 306325" inputmode="numeric">
+    </div>
+
+    <div class="photo-box" id="route-photo-box" onclick="document.getElementById('route-photo-input').click()">
+      <div class="photo-icon">📸</div>
+      <div class="photo-label">Tap to upload route screenshot<br><span style="font-size:12px;color:#aaa;">Or tap 📋 Paste below</span></div>
+      <img id="route-photo-preview" class="photo-preview">
+    </div>
+    <input type="file" id="route-photo-input" accept="image/*" style="display:none;" onchange="handleRoutePhoto(event)">
+
+    <button class="btn btn-outline" onclick="pasteRouteScreenshot()" style="margin-bottom:10px;">
+      📋 Paste Screenshot from Clipboard
+    </button>
+
+    <div class="status-box" id="upload-status"></div>
+
+    <button class="btn btn-green" onclick="uploadRouteScreenshot()">
+      ☁️ Save Route to Drive
+    </button>
+  </div>
+
+</div>
+
+<!-- ══ SCREEN 2: FIND JOB ══ -->
+<div class="screen" id="screen-1">
+
+  <div class="notice">
+    Search any past job to add photos, view details, or update information.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Search Past Jobs</div>
+    <div class="field">
+      <label>Search by Invoice #, Well Name, Oil Company, or Date</label>
+      <input type="text" id="job-search-input" placeholder="e.g. 306325 or Pioneer or Robb Stone..." oninput="searchJobs()">
+    </div>
+    <div id="job-search-results">
+      <div class="loading">Type to search your jobs...</div>
+    </div>
+  </div>
+
+  <!-- Job Detail View -->
+  <div id="job-detail" style="display:none;">
+    <div class="card">
+      <div class="card-title" id="job-detail-title">Job Details</div>
+      <div id="job-detail-info"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Add / Replace Photos</div>
+      <div class="notice notice-orange">Photos save to both this job folder AND the well folder automatically.</div>
+
+      <div class="field">
+        <label>Photo Type</label>
+        <select id="photo-type">
+          <option value="route">Route Screenshot</option>
+          <option value="jobsite">Job Site Photo</option>
+          <option value="cable">Cable Photo</option>
+          <option value="equipment">Equipment Photo</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="photo-box" id="job-photo-box" onclick="document.getElementById('job-photo-input').click()">
+        <div class="photo-icon">📸</div>
+        <div class="photo-label">Tap to select photo<br><span style="font-size:12px;color:#aaa;">Or paste from clipboard</span></div>
+        <img id="job-photo-preview" class="photo-preview">
+      </div>
+      <input type="file" id="job-photo-input" accept="image/*" style="display:none;" onchange="handleJobPhoto(event)">
+
+      <button class="btn btn-outline" onclick="pasteJobPhoto()" style="margin-bottom:10px;">
+        📋 Paste Photo from Clipboard
+      </button>
+
+      <div class="status-box" id="job-upload-status"></div>
+      <button class="btn btn-green" onclick="uploadJobPhoto()">☁️ Save Photo to Drive</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ SCREEN 3: WELLS ENCYCLOPEDIA ══ -->
+<div class="screen" id="screen-2">
+
+  <div class="notice">
+    Every well location you've ever worked. Tap any well to see its full history and photos.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Search Wells</div>
+    <div class="field">
+      <input type="text" id="well-enc-search" placeholder="Search by well name, lease, or customer..." oninput="searchEncyclopedia()">
+    </div>
+  </div>
+
+  <div id="well-list">
+    <div class="loading">Loading wells...</div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaL6NUGlNmM5yhLkOn_4hxCYNzc68k0vPJ5m20StZ8olPNtKAuv2nykRO-vax-zTij/exec';
+const TECH_PASSWORD = 'Mav26';
+const OWNER_PASSWORD = 'MavOwner26';
+
+const CABLE_SHOPS = {
+  '6206 S County Rd 1270, Midland, TX 79706': 'Innovex',
+  '801 SW Mustang Dr, Andrews, TX 79714': 'Summit',
+  '2340 US-385, Andrews, TX 79714': 'Baker Hughes',
+  '2806 N County Rd 1148, Midland, TX 79705': 'Valiant',
+  '12220 TX-191 Frontage, Midland, TX 79707': 'Endurance Lift Solutions',
+  '1440 Windway St, Odessa, TX 79763': 'ChampionX',
+};
+
+// ── State ──
+let currentUser   = null;
+let isOwner       = false;
+let jobCoords     = null;
+let selectedWell  = null;
+let routePhotoB64 = null;
+let jobPhotoB64   = null;
+let selectedJob   = null;
+let allJobs       = [];
+let allWells      = [];
+
+// ══════════════════════════════════════════
+// PASSWORD
+// ══════════════════════════════════════════
+function checkPassword() {
+  var input = document.getElementById('pw-input').value;
+  if(input === OWNER_PASSWORD) {
+    isOwner = true;
+    currentUser = 'Owner';
+    unlock();
+  } else if(input === TECH_PASSWORD) {
+    isOwner = false;
+    currentUser = 'Tech';
+    unlock();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function unlock() {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('user-badge').textContent = isOwner ? '👑 Owner' : '🔧 Tech';
+  sessionStorage.setItem('mav-loc-auth', currentUser);
+  loadWells();
+}
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function switchTab(idx) {
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════════
+// START POINT
+// ══════════════════════════════════════════
+document.getElementById('start-point').addEventListener('change', function() {
+  document.getElementById('custom-start').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+document.getElementById('cable-shop').addEventListener('change', function() {
+  document.getElementById('custom-shop-div').style.display = this.value === 'custom_shop' ? 'block' : 'none';
+  checkShowMapsBtn();
+});
+
+// ══════════════════════════════════════════
+// LOCATION METHODS
+// ══════════════════════════════════════════
+function getCurrentLocation() {
+  if(!navigator.geolocation) {
+    alert('Geolocation not supported on this device.');
+    return;
+  }
+  var btn = event.target;
+  btn.textContent = '⏳ Getting location...';
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      jobCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      showCoords(jobCoords.lat, jobCoords.lng, 'Current Location');
+      btn.textContent = '📍 Use My Location';
+      btn.disabled = false;
+      document.getElementById('save-well-div').style.display = 'block';
+      checkShowMapsBtn();
+    },
+    function(err) {
+      alert('Could not get location. Make sure location access is enabled.');
+      btn.textContent = '📍 Use My Location';
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function showPasteCoords() {
+  var div = document.getElementById('paste-coords-div');
+  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+function extractCoordsFromLink() {
+  var link = document.getElementById('maps-link-input').value;
+  // Extract coords from Google Maps URL formats:
+  // https://maps.google.com/?q=31.9876,-102.1234
+  // https://www.google.com/maps/@31.9876,-102.1234,15z
+  // https://maps.app.goo.gl/... (short links — can't extract directly)
+
+  var patterns = [
+    /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /\?q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /place\/[^/]+\/@(-?\d+\.\d+),(-?\d+\.\d+)/,
+  ];
+
+  for(var i=0; i<patterns.length; i++) {
+    var match = link.match(patterns[i]);
+    if(match) {
+      jobCoords = { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+      showCoords(jobCoords.lat, jobCoords.lng, 'From Maps Link');
+      document.getElementById('save-well-div').style.display = 'block';
+      checkShowMapsBtn();
+      return;
+    }
+  }
+
+  if(link.length > 10) {
+    document.getElementById('paste-coords-div').innerHTML +=
+      '<div class="notice" style="margin-top:8px;">⚠️ Could not extract coordinates from this link. Try a full Google Maps URL or enter coordinates manually.</div>';
+  }
+}
+
+function useManualCoords() {
+  var lat = parseFloat(document.getElementById('manual-lat').value);
+  var lng = parseFloat(document.getElementById('manual-lng').value);
+  if(isNaN(lat) || isNaN(lng)) { alert('Enter valid latitude and longitude.'); return; }
+  jobCoords = { lat: lat, lng: lng };
+  showCoords(lat, lng, 'Manual Entry');
+  document.getElementById('save-well-div').style.display = 'block';
+  checkShowMapsBtn();
+}
+
+function showCoords(lat, lng, source) {
+  var display = document.getElementById('job-coord-display');
+  document.getElementById('job-coord-value').textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
+  document.getElementById('job-well-name-display').textContent = source;
+  display.classList.add('show');
+  document.getElementById('screenshot-card').style.display = 'block';
+}
+
+// ══════════════════════════════════════════
+// WELL SEARCH IN ROUTE TAB
+// ══════════════════════════════════════════
+function searchWellsRoute() {
+  var q = document.getElementById('well-search-route').value.toLowerCase().trim();
+  var container = document.getElementById('well-search-results-route');
+  if(!q) { container.innerHTML = ''; return; }
+
+  var matches = allWells.filter(function(w) {
+    return (w.name||'').toLowerCase().includes(q) ||
+           (w.lease||'').toLowerCase().includes(q) ||
+           (w.customer||'').toLowerCase().includes(q);
+  });
+
+  if(matches.length === 0) {
+    container.innerHTML = '<div class="notice">No saved wells found. Use location methods below to add this well.</div>';
+    return;
+  }
+
+  container.innerHTML = matches.slice(0,5).map(function(w) {
+    return '<div class="search-result" onclick="selectWellForRoute('+JSON.stringify(w).replace(/"/g,"'")+')">' +
+      '<div class="result-title">📍 '+w.name+'</div>' +
+      '<div class="result-sub">'+w.lease+' · '+w.customer+'</div>' +
+      '<div class="result-badge">'+w.lat+', '+w.lng+'</div>' +
+      '</div>';
+  }).join('');
+}
+
+function selectWellForRoute(well) {
+  jobCoords = { lat: parseFloat(well.lat), lng: parseFloat(well.lng) };
+  selectedWell = well;
+  document.getElementById('well-search-route').value = well.name;
+  document.getElementById('well-search-results-route').innerHTML = '';
+  showCoords(jobCoords.lat, jobCoords.lng, well.name + ' · ' + well.customer);
+  document.getElementById('save-well-div').style.display = 'none';
+  checkShowMapsBtn();
+}
+
+// ══════════════════════════════════════════
+// OPEN MAPS
+// ══════════════════════════════════════════
+function checkShowMapsBtn() {
+  var shop = document.getElementById('cable-shop').value;
+  var btn  = document.getElementById('open-maps-btn');
+  if(shop && shop !== 'custom_shop' && jobCoords) {
+    btn.style.display = 'block';
+  } else if(shop === 'custom_shop' && document.getElementById('custom-shop-addr').value && jobCoords) {
+    btn.style.display = 'block';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function openMapsRoute() {
+  var startSel  = document.getElementById('start-point').value;
+  var start     = startSel === 'custom' ? document.getElementById('custom-start-addr').value : startSel;
+  var shopSel   = document.getElementById('cable-shop').value;
+  var shop      = shopSel === 'custom_shop' ? document.getElementById('custom-shop-addr').value : shopSel;
+  var jobLat    = jobCoords.lat;
+  var jobLng    = jobCoords.lng;
+
+  // Google Maps directions URL with waypoints
+  // Start → Cable Shop → Job Location → Cable Shop (return)
+  var url = 'https://www.google.com/maps/dir/' +
+    encodeURIComponent(start) + '/' +
+    encodeURIComponent(shop) + '/' +
+    jobLat + ',' + jobLng + '/' +
+    encodeURIComponent(shop);
+
+  window.open(url, '_blank');
+}
+
+// ══════════════════════════════════════════
+// SAVE NEW WELL
+// ══════════════════════════════════════════
+function saveNewWell() {
+  var name     = document.getElementById('new-well-name').value.trim();
+  var lease    = document.getElementById('new-well-lease').value.trim();
+  var customer = document.getElementById('new-well-customer').value;
+
+  if(!name) { alert('Please enter a well name.'); return; }
+  if(!jobCoords) { alert('No coordinates set.'); return; }
+
+  var payload = {
+    action:   'saveWell',
+    name:     name,
+    lease:    lease,
+    customer: customer,
+    lat:      jobCoords.lat,
+    lng:      jobCoords.lng,
+    date:     new Date().toLocaleDateString(),
+  };
+
+  showStatus('upload-status', 'loading', '⏳ Saving well to encyclopedia...');
+
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)), { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    showStatus('upload-status', 'success', '✅ ' + name + ' saved to encyclopedia!');
+    // Add to local list
+    allWells.push(payload);
+    selectedWell = payload;
+    document.getElementById('save-well-div').style.display = 'none';
+    document.getElementById('job-well-name-display').textContent = name + ' · ' + customer + ' (saved)';
+  })
+  .catch(function() {
+    showStatus('upload-status', 'error', '❌ Failed to save. Check your connection.');
+  });
+}
+
+// ══════════════════════════════════════════
+// PHOTO HANDLING
+// ══════════════════════════════════════════
+function handleRoutePhoto(event) {
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    routePhotoB64 = e.target.result.split(',')[1];
+    var preview = document.getElementById('route-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('route-photo-box').classList.add('has-photo');
+    document.getElementById('route-photo-box').querySelector('.photo-label').textContent = '✅ Photo ready to upload';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleJobPhoto(event) {
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    jobPhotoB64 = e.target.result.split(',')[1];
+    var preview = document.getElementById('job-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('job-photo-box').classList.add('has-photo');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function pasteRouteScreenshot() {
+  try {
+    var items = await navigator.clipboard.read();
+    for(var item of items) {
+      for(var type of item.types) {
+        if(type.startsWith('image/')) {
+          var blob   = await item.getType(type);
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            routePhotoB64 = e.target.result.split(',')[1];
+            var preview = document.getElementById('route-photo-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('route-photo-box').classList.add('has-photo');
+            document.getElementById('route-photo-box').querySelector('.photo-label').textContent = '✅ Screenshot pasted!';
+          };
+          reader.readAsDataURL(blob);
+          return;
+        }
+      }
+    }
+    alert('No image found in clipboard. Take a screenshot first, then paste.');
+  } catch(e) {
+    alert('Paste not supported on this device. Use the upload button instead.');
+  }
+}
+
+async function pasteJobPhoto() {
+  try {
+    var items = await navigator.clipboard.read();
+    for(var item of items) {
+      for(var type of item.types) {
+        if(type.startsWith('image/')) {
+          var blob   = await item.getType(type);
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            jobPhotoB64 = e.target.result.split(',')[1];
+            var preview = document.getElementById('job-photo-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('job-photo-box').classList.add('has-photo');
+          };
+          reader.readAsDataURL(blob);
+          return;
+        }
+      }
+    }
+    alert('No image found in clipboard.');
+  } catch(e) {
+    alert('Paste not supported. Use the upload button instead.');
+  }
+}
+
+// ══════════════════════════════════════════
+// UPLOAD ROUTE SCREENSHOT
+// ══════════════════════════════════════════
+function uploadRouteScreenshot() {
+  if(!routePhotoB64) { alert('Please select or paste a screenshot first.'); return; }
+  var invNum   = document.getElementById('route-invoice-num').value.trim();
+  var wellName = selectedWell ? selectedWell.name : (document.getElementById('new-well-name').value || 'Unknown');
+  var shopSel  = document.getElementById('cable-shop').value;
+  var shop     = CABLE_SHOPS[shopSel] || shopSel;
+
+  showStatus('upload-status', 'loading', '⏳ Uploading to Drive...');
+
+  var payload = {
+    action:    'uploadPhoto',
+    photoB64:  routePhotoB64,
+    photoType: 'route',
+    invoiceNum: invNum,
+    wellName:  wellName,
+    cableShop: shop,
+    coords:    jobCoords ? jobCoords.lat + ',' + jobCoords.lng : '',
+    date:      new Date().toLocaleDateString(),
+    tech:      currentUser,
+  };
+
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)), { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    showStatus('upload-status', 'success', '✅ Route screenshot saved to Drive!\nLinked to: Job #' + (invNum||'—') + ' · ' + wellName);
+  })
+  .catch(function() {
+    showStatus('upload-status', 'error', '❌ Upload failed. Check your connection.');
+  });
+}
+
+// ══════════════════════════════════════════
+// JOB SEARCH
+// ══════════════════════════════════════════
+function searchJobs() {
+  var q = document.getElementById('job-search-input').value.toLowerCase().trim();
+  var container = document.getElementById('job-search-results');
+
+  if(!q) {
+    container.innerHTML = '<div class="loading">Type to search your jobs...</div>';
+    return;
+  }
+
+  var matches = allJobs.filter(function(j) {
+    return (j.invoiceNum||'').toLowerCase().includes(q) ||
+           (j.wellNum||'').toLowerCase().includes(q) ||
+           (j.customer||'').toLowerCase().includes(q) ||
+           (j.leaseName||'').toLowerCase().includes(q) ||
+           (j.date||'').includes(q);
+  });
+
+  if(matches.length === 0) {
+    container.innerHTML = '<div class="notice">No jobs found matching "' + q + '"</div>';
+    document.getElementById('job-detail').style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = matches.slice(0,8).map(function(j) {
+    return '<div class="search-result" onclick="showJobDetail(' + JSON.stringify(j).replace(/"/g,"'") + ')">' +
+      '<div class="result-title">Invoice #' + (j.invoiceNum||'—') + '</div>' +
+      '<div class="result-sub">' + (j.date||'') + ' · ' + (j.customer||'') + ' · ' + (j.leaseName||'') + '</div>' +
+      '<div class="result-badge">Well: ' + (j.wellNum||'—') + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function showJobDetail(job) {
+  selectedJob = job;
+  document.getElementById('job-detail').style.display = 'block';
+  document.getElementById('job-detail-title').textContent = 'Invoice #' + (job.invoiceNum||'—');
+  document.getElementById('job-detail-info').innerHTML =
+    '<div class="field-row" style="margin-bottom:8px;">' +
+    '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;">Date</div><div style="font-weight:600;">' + (job.date||'—') + '</div></div>' +
+    '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;">Customer</div><div style="font-weight:600;">' + (job.customer||'—') + '</div></div>' +
+    '</div>' +
+    '<div class="field-row">' +
+    '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;">Well #</div><div style="font-weight:600;">' + (job.wellNum||'—') + '</div></div>' +
+    '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;">Total Invoice</div><div style="font-weight:700;color:var(--red);font-size:18px;">$' + parseFloat(job.grandTotal||0).toFixed(2) + '</div></div>' +
+    '</div>';
+  document.getElementById('job-detail').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// UPLOAD JOB PHOTO
+// ══════════════════════════════════════════
+function uploadJobPhoto() {
+  if(!jobPhotoB64) { alert('Please select or paste a photo first.'); return; }
+  if(!selectedJob) { alert('Please select a job first.'); return; }
+
+  var photoType = document.getElementById('photo-type').value;
+  showStatus('job-upload-status', 'loading', '⏳ Uploading to Drive...');
+
+  var payload = {
+    action:     'uploadPhoto',
+    photoB64:   jobPhotoB64,
+    photoType:  photoType,
+    invoiceNum: selectedJob.invoiceNum,
+    wellName:   selectedJob.leaseName || selectedJob.wellNum || 'Unknown',
+    date:       new Date().toLocaleDateString(),
+    tech:       currentUser,
+  };
+
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)), { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    showStatus('job-upload-status', 'success', '✅ Photo saved!\nJob #' + selectedJob.invoiceNum + ' · ' + photoType);
+    jobPhotoB64 = null;
+    document.getElementById('job-photo-preview').style.display = 'none';
+    document.getElementById('job-photo-box').classList.remove('has-photo');
+  })
+  .catch(function() {
+    showStatus('job-upload-status', 'error', '❌ Upload failed. Check your connection.');
+  });
+}
+
+// ══════════════════════════════════════════
+// WELLS ENCYCLOPEDIA
+// ══════════════════════════════════════════
+function loadWells() {
+  // Load from Apps Script
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify({ action: 'getWells' })), { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    // no-cors won't return data — wells load from sheet on next proper call
+    renderWells(allWells);
+  })
+  .catch(function() {
+    renderWells([]);
+  });
+}
+
+function searchEncyclopedia() {
+  var q = document.getElementById('well-enc-search').value.toLowerCase().trim();
+  var filtered = q ? allWells.filter(function(w) {
+    return (w.name||'').toLowerCase().includes(q) ||
+           (w.lease||'').toLowerCase().includes(q) ||
+           (w.customer||'').toLowerCase().includes(q);
+  }) : allWells;
+  renderWells(filtered);
+}
+
+function renderWells(wells) {
+  var container = document.getElementById('well-list');
+  if(!wells || wells.length === 0) {
+    container.innerHTML = '<div class="notice">No wells saved yet. Use the Route tab to add wells as you work them.</div>';
+    return;
+  }
+  container.innerHTML = wells.map(function(w) {
+    return '<div class="well-card">' +
+      '<div class="well-name">📍 ' + w.name + '</div>' +
+      '<div class="well-meta">' + (w.lease||'') + ' · ' + (w.customer||'') + '</div>' +
+      '<div class="well-meta">Coords: ' + (w.lat||'') + ', ' + (w.lng||'') + '</div>' +
+      '<div class="well-meta">Last worked: ' + (w.date||'—') + '</div>' +
+      '<div class="well-actions">' +
+      '<button class="btn-sm" style="background:var(--blue);color:white;" onclick="openWellInMaps(' + w.lat + ',' + w.lng + ')">🗺️ Open in Maps</button>' +
+      (isOwner ? '<button class="btn-sm" style="background:var(--orange);color:white;" onclick="editWell(this, ' + JSON.stringify(w).replace(/"/g,"'") + ')">✏️ Edit</button>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+function openWellInMaps(lat, lng) {
+  window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
+}
+
+function editWell(btn, well) {
+  // Simple inline edit for owner
+  var newName = prompt('Edit well name:', well.name);
+  if(!newName) return;
+  var newLat  = prompt('Edit latitude:', well.lat);
+  var newLng  = prompt('Edit longitude:', well.lng);
+
+  var payload = {
+    action:   'editWell',
+    oldName:  well.name,
+    name:     newName,
+    lease:    well.lease,
+    customer: well.customer,
+    lat:      newLat || well.lat,
+    lng:      newLng || well.lng,
+  };
+
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)), { method: 'GET', mode: 'no-cors' })
+  .then(function() {
+    alert('✅ Well updated!');
+    well.name = newName;
+    well.lat  = newLat || well.lat;
+    well.lng  = newLng || well.lng;
+    renderWells(allWells);
+  });
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function showStatus(id, type, msg) {
+  var el = document.getElementById(id);
+  el.className = 'status-box show status-' + type;
+  el.textContent = msg;
+  el.style.whiteSpace = 'pre-line';
+}
+
+// ── INIT ──
+window.addEventListener('load', function() {
+  var saved = sessionStorage.getItem('mav-loc-auth');
+  if(saved) {
+    currentUser = saved;
+    isOwner = saved === 'Owner';
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('user-badge').textContent = isOwner ? '👑 Owner' : '🔧 Tech';
+    loadWells();
+  } else {
+    document.getElementById('pw-input').focus();
+  }
+});
+</script>
+</body>
+</html>
