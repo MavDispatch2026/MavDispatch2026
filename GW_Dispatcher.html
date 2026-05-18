@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>G&W Dispatch</title>
+<title>Maverick Dispatch</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 
@@ -84,8 +84,25 @@
 </head>
 <body>
 
+<!-- PASSWORD SCREEN -->
+<div id="lock-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#8B0000;z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:32px 28px;width:90%;max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:#8B0000;margin-bottom:4px;">MAVERICK DISPATCH</div>
+    <div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px;">Owner Access Only</div>
+    <div style="font-size:40px;margin-bottom:16px;">🔒</div>
+    <input type="password" id="pw-input" placeholder="Enter password"
+      style="width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:18px;text-align:center;font-family:'DM Sans',sans-serif;margin-bottom:10px;"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="pw-error" style="color:#8B0000;font-size:13px;font-weight:700;margin-bottom:10px;display:none;">❌ Wrong password. Try again.</div>
+    <button onclick="checkPassword()"
+      style="width:100%;padding:16px;background:#8B0000;color:white;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;">
+      UNLOCK
+    </button>
+  </div>
+</div>
+
 <div class="header">
-  <h1>G&W Dispatch</h1>
+  <h1>Maverick Dispatch</h1>
   <div class="sub">Generate Pre-Fill Links for Techs</div>
 </div>
 
@@ -225,7 +242,7 @@ function generateLink() {
   document.getElementById('link-display').textContent = link;
 
   // Build SMS text
-  var sms = 'G&W Job Dispatch 🛠️\n';
+  var sms = 'Maverick Job Dispatch 🛠️\n';
   if(inv)      sms += 'Invoice #: ' + inv + '\n';
   if(dispatch) sms += 'Dispatch #: ' + dispatch + '\n';
   if(oil)      sms += 'Oil Company: ' + oil + '\n';
@@ -293,6 +310,30 @@ function resetForm() {
   document.getElementById('output').classList.remove('show');
   updatePreview();
 }
+
+// PASSWORD
+var PASSWORD = 'Maverick26';  // ← CHANGE THIS TO WHATEVER YOU WANT
+
+function checkPassword() {
+  var input = document.getElementById('pw-input').value;
+  if(input === PASSWORD) {
+    document.getElementById('lock-screen').style.display = 'none';
+    sessionStorage.setItem('gw-auth', 'yes');
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// Auto-unlock if already authenticated this session
+window.addEventListener('load', function() {
+  if(sessionStorage.getItem('gw-auth') === 'yes') {
+    document.getElementById('lock-screen').style.display = 'none';
+  } else {
+    document.getElementById('pw-input').focus();
+  }
+});
 </script>
 </body>
 </html>
