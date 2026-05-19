@@ -2,249 +2,244 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Maverick Field Billing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Maverick Spooling Services</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+:root{
+  --red:#8B0000;--blue:#1B3A6B;--green:#1E8449;--orange:#E67E22;
+  --light:#F4F6F8;--card:#fff;--border:#D5D8DC;--text:#1C2833;--muted:#7F8C8D;
+  --radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);min-height:100vh;padding-bottom:80px;}
 
-  :root {
-    --red: #C0392B;
-    --dark-red: #8B0000;
-    --orange: #E67E22;
-    --green: #1E8449;
-    --blue: #1B3A6B;
-    --light: #F4F6F8;
-    --card: #FFFFFF;
-    --border: #D5D8DC;
-    --text: #1C2833;
-    --muted: #7F8C8D;
-    --input-bg: #EBF5FB;
-    --radius: 14px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.10);
-  }
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--red);z-index:9999;display:flex;align-items:center;justify-content:center;}
+.login-box{background:#fff;border-radius:20px;padding:36px 28px;width:90%;max-width:380px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--red);}
+.login-sub{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px;}
+.login-field{width:100%;padding:14px;border:2px solid var(--border);border-radius:10px;font-size:16px;font-family:'DM Sans',sans-serif;margin-bottom:12px;background:#EBF5FB;text-align:center;}
+.login-field:focus{outline:none;border-color:var(--blue);}
+.login-error{color:var(--red);font-size:13px;font-weight:700;margin-bottom:10px;display:none;}
+.login-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--light); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+/* HEADER */
+.app-header{background:var(--red);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(0,0,0,.3);}
+.app-header h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
+.app-header .sub{font-size:10px;opacity:.75;letter-spacing:1px;text-transform:uppercase;}
+.user-badge{font-size:12px;opacity:.8;text-align:right;}
 
-  .app-header {
-    background: var(--dark-red); color: white; padding: 18px 20px 14px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
-  }
-  .app-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; }
-  .app-header .sub { font-size: 11px; opacity: 0.75; letter-spacing: 1px; text-transform: uppercase; }
+/* NAV TABS */
+.nav-tabs{display:flex;background:#6B0000;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav-tab{flex:0 0 auto;padding:11px 16px;text-align:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;}
+.nav-tab.active{color:#fff;border-bottom-color:var(--orange);}
 
-  .steps { display: flex; background: #6B0000; padding: 0 20px; }
-  .step-btn {
-    flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: 600;
-    color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase;
-    border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
-  }
-  .step-btn.active { color: white; border-bottom-color: var(--orange); }
-  .step-btn.done { color: rgba(255,255,255,0.75); }
+/* SCREENS */
+.screen{display:none;padding:14px;}
+.screen.active{display:block;}
 
-  .screen { display: none; padding: 16px; }
-  .screen.active { display: block; }
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:var(--blue);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--light);}
+.card-title.red{color:var(--red);}
+.card-title.green{color:var(--green);}
 
-  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; }
-  .card-title {
-    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px;
-    color: var(--dark-red); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--light);
-  }
+/* FIELDS */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--text);background:#EBF5FB;appearance:none;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue);background:#fff;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
-  .field input, .field select, .field textarea {
-    width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px;
-    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; color: var(--text);
-    background: var(--input-bg); appearance: none; transition: border-color 0.2s;
-  }
-  .field input:focus, .field select:focus { outline: none; border-color: var(--blue); background: white; }
-  .field select { cursor: pointer; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* BUTTONS */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:var(--radius);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 14px rgba(139,0,0,.35);}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-outline{background:#fff;color:var(--blue);border:2px solid var(--blue);}
+.btn-gray{background:#ECF0F1;color:var(--muted);font-size:15px;}
+.btn-sm{display:inline-block;padding:9px 14px;border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;margin:0 6px 6px 0;}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
-  /* HOUR SLOT */
-  .hour-slot { background: var(--light); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-  .hour-slot.t2 { background: #EAF5EA; }
-  .slot-label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-  .t2 .slot-label { color: var(--green); }
+/* NOTICES */
+.notice{background:#EBF5FB;border-left:4px solid var(--blue);border-radius:8px;padding:11px 13px;font-size:13px;color:var(--blue);margin-bottom:12px;line-height:1.5;}
+.notice.green{background:#D5F5E3;border-color:var(--green);color:var(--green);}
+.notice.orange{background:#FDEBD0;border-color:var(--orange);color:var(--orange);}
+.notice.red{background:#FADBD8;border-color:var(--red);color:var(--red);}
 
-  .dropdowns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .dropdowns select {
-    width: 100%; padding: 11px 12px; border: 2px solid var(--border); border-radius: 8px;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-    color: var(--text); background: white; appearance: none; cursor: pointer;
-  }
-  .dropdowns select:focus { outline: none; border-color: var(--blue); }
+/* STATUS */
+.status{border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:14px;font-weight:600;display:none;line-height:1.5;}
+.status.show{display:block;}
+.status.success{background:#D5F5E3;border:2px solid #A9DFBF;color:var(--green);}
+.status.error{background:#FADBD8;border:2px solid #F1948A;color:var(--red);}
+.status.loading{background:#EBF5FB;border:2px solid #AED6F1;color:var(--blue);}
 
-  .rate-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    border-radius: 8px; padding: 8px 14px; font-size: 15px; font-weight: 700;
-    margin-bottom: 10px; border: 2px solid #ccc; background: #ECF0F1; color: var(--muted);
-    transition: all 0.2s;
-  }
-  .rate-badge.locked { background: #D5F5E3; border-color: #A9DFBF; color: var(--green); }
+/* HOUR ENTRY */
+.hour-slot{background:var(--light);border-radius:10px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;}
+.hour-label{font-size:14px;font-weight:600;}
+.hour-input{padding:12px 8px;border:2px solid var(--border);border-radius:8px;font-size:24px;font-weight:800;text-align:center;background:#fff;font-family:'DM Sans',sans-serif;width:100%;}
+.hour-input:focus{outline:none;border-color:var(--blue);}
 
-  .qty-area { display: grid; grid-template-columns: 1fr; gap: 0; }
-  .qty-box { text-align: center; }
-  .qty-box label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-  .qty-box input {
-    width: 100%; padding: 14px 8px; border: 2px solid var(--border); border-radius: 8px;
-    font-size: 28px; font-weight: 700; text-align: center; background: white;
-    font-family: 'DM Sans', sans-serif; color: var(--text);
-  }
-  .qty-box input:focus { outline: none; border-color: var(--blue); }
-  .line-total { font-size: 13px; font-weight: 600; color: var(--dark-red); margin-top: 5px; text-align: center; }
+/* RATE BADGE */
+.rate-badge{background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:10px 14px;text-align:center;margin-bottom:12px;}
+.rate-badge .rl{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.8px;}
+.rate-badge .rv{font-size:24px;font-weight:800;color:var(--red);}
 
-  .miles-area { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; margin-top: 4px; }
-  .mile-rate-badge {
-    display: flex; align-items: center; gap: 6px; padding: 12px 14px;
-    background: #D5F5E3; border: 2px solid #A9DFBF; border-radius: 8px;
-    font-size: 14px; font-weight: 700; color: var(--green);
-  }
+/* PARTS */
+.part-row{display:grid;grid-template-columns:1fr 65px 95px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--light);}
+.part-row:last-child{border-bottom:none;}
+.part-name{font-size:13px;font-weight:500;line-height:1.3;}
+.part-uom{font-size:11px;color:var(--muted);}
+.part-qty{padding:9px 6px;border:2px solid var(--border);border-radius:8px;font-size:17px;font-weight:700;text-align:center;background:#fff;width:100%;}
+.part-qty:focus{outline:none;border-color:var(--blue);}
+.part-total{font-size:13px;font-weight:700;text-align:right;color:var(--red);}
 
-  .toggle-row {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--card); border-radius: 10px; padding: 14px 16px;
-    margin-bottom: 14px; border: 2px solid var(--border);
-  }
-  .toggle-label { font-size: 15px; font-weight: 600; }
-  .toggle-label .sub { font-size: 12px; color: var(--muted); font-weight: 400; }
-  .toggle { width: 52px; height: 28px; background: #ccc; border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
-  .toggle.on { background: var(--green); }
-  .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-  .toggle.on::after { left: 27px; }
+/* SUMMARY */
+.total-box{background:var(--red);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:12px;box-shadow:0 4px 20px rgba(139,0,0,.4);}
+.total-box .tl{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:rgba(255,255,255,.8);margin-bottom:4px;}
+.total-box .tv{font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;letter-spacing:2px;line-height:1;}
+.total-box .ts{font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;}
 
-  .part-row { display: grid; grid-template-columns: 1fr 72px 100px; gap: 8px; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--light); }
-  .part-row:last-child { border-bottom: none; }
-  .part-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
-  .part-uom { font-size: 11px; color: var(--muted); }
-  .part-qty { padding: 10px 8px; border: 2px solid var(--border); border-radius: 8px; font-size: 18px; font-weight: 700; text-align: center; background: white; width: 100%; font-family: 'DM Sans', sans-serif; }
-  .part-qty:focus { outline: none; border-color: var(--blue); }
-  .part-total { font-size: 13px; font-weight: 700; text-align: right; color: var(--dark-red); }
+.cc-box{background:#FFFDE7;border:3px solid var(--orange);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.cc-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:var(--orange);margin-bottom:10px;}
+.cc-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #F0D060;font-size:14px;}
+.cc-row:last-child{border-bottom:none;}
+.cc-f{color:var(--muted);font-size:12px;}
+.cc-v{font-weight:700;font-size:15px;}
 
-  .total-box { background: var(--dark-red); border-radius: var(--radius); padding: 22px 20px; text-align: center; margin-bottom: 14px; box-shadow: 0 4px 20px rgba(139,0,0,0.4); }
-  .total-box .total-label { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: rgba(255,255,255,0.8); margin-bottom: 6px; }
-  .total-box .total-amount { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: white; letter-spacing: 2px; line-height: 1; }
-  .total-box .total-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+.sum-box{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;}
+.sum-hdr{background:var(--blue);color:#fff;padding:10px 16px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--light);font-size:13px;}
+.sum-row:last-child{border-bottom:none;}
+.sum-row .sl{color:var(--muted);font-weight:500;}
+.sum-row .sv{font-weight:700;}
+.sum-row.hl .sl{color:var(--text);font-weight:700;}
+.sum-row.hl .sv{color:var(--red);font-size:16px;}
 
-  .cc-box { background: #FFFDE7; border: 3px solid var(--orange); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; }
-  .cc-box .cc-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; color: var(--orange); margin-bottom: 12px; }
-  .cc-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #F0D060; font-size: 15px; }
-  .cc-row:last-child { border-bottom: none; }
-  .cc-row .cc-f { color: var(--muted); font-size: 13px; }
-  .cc-row .cc-v { font-weight: 700; font-size: 16px; }
+/* DASHBOARD */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.metric-card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);text-align:center;}
+.metric-card .ml{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.metric-card .mv{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--red);letter-spacing:1px;}
+.metric-card .ms{font-size:11px;color:var(--muted);}
+.metric-card.blue .mv{color:var(--blue);}
+.metric-card.green .mv{color:var(--green);}
 
-  .sum-box { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 14px; }
-  .sum-hdr { background: var(--dark-red); color: white; padding: 12px 18px; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; }
-  .sum-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--light); font-size: 14px; }
-  .sum-row:last-child { border-bottom: none; }
-  .sum-row .sl { color: var(--muted); font-weight: 500; }
-  .sum-row .sv { font-weight: 700; }
-  .sum-row.hl .sl { color: var(--text); font-weight: 700; }
-  .sum-row.hl .sv { color: var(--dark-red); font-size: 16px; }
+/* EARNINGS */
+.pay-breakdown{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;}
+.pay-hdr{background:var(--blue);color:#fff;padding:12px 16px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;}
+.pay-row{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--light);font-size:14px;}
+.pay-row:last-child{border-bottom:none;}
+.pay-label{color:var(--muted);}
+.pay-value{font-weight:700;}
+.pay-total-box{background:#D5F5E3;border:2px solid #A9DFBF;border-radius:var(--radius);padding:18px;text-align:center;margin-bottom:12px;}
+.pay-total-label{font-size:12px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.pay-total-amount{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--green);letter-spacing:2px;}
 
-  .btn { display: block; width: 100%; padding: 18px; border: none; border-radius: var(--radius); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; cursor: pointer; margin-bottom: 10px; transition: transform 0.1s; }
-  .btn:active { transform: scale(0.98); }
-  .btn-primary { background: var(--dark-red); color: white; box-shadow: 0 4px 14px rgba(139,0,0,0.35); }
-  .btn-outline { background: white; color: var(--dark-red); border: 2px solid var(--dark-red); }
-  .btn-green { background: var(--green); color: white; }
-  .btn-reset { background: #ECF0F1; color: var(--muted); font-size: 16px; }
+/* CLOCK */
+.clock-box{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;text-align:center;margin-bottom:12px;}
+.clock-time{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--text);letter-spacing:2px;}
+.clock-date{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.clock-status{font-size:14px;font-weight:600;margin-bottom:14px;}
+.clock-status.in{color:var(--green);}
+.clock-status.out{color:var(--red);}
 
-  .notice { background: #EBF5FB; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--blue); margin-bottom: 14px; line-height: 1.5; }
-  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+/* JOBS LIST */
+.job-card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:10px;border-left:4px solid var(--blue);cursor:pointer;}
+.job-card:active{opacity:.8;}
+.job-inv{font-size:15px;font-weight:800;color:var(--text);}
+.job-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+.job-total{font-size:18px;font-weight:800;color:var(--red);margin-top:6px;}
 
-  /* HOUR ENTRY ROWS */
-  .hour-entry {
-    display: grid;
-    grid-template-columns: 1fr 110px;
-    gap: 8px;
-    align-items: center;
-    padding: 10px 4px;
-    border-bottom: 1px solid var(--light);
-  }
-  .hour-entry:last-of-type { border-bottom: none; }
-  .hour-entry.t2 { background: #F0FFF4; border-radius: 8px; padding: 10px 8px; margin-bottom: 4px; }
-  .hour-label { font-size: 15px; font-weight: 600; color: var(--text); }
-  .hour-input {
-    padding: 12px 8px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 24px;
-    font-weight: 800;
-    text-align: center;
-    background: white;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    width: 100%;
-  }
-  .hour-input:focus { outline: none; border-color: var(--blue); background: #EBF5FB; }
+/* WELL CARD */
+.well-card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:10px;border-left:4px solid var(--green);}
+.well-name{font-size:15px;font-weight:800;}
+.well-meta{font-size:12px;color:var(--muted);margin-top:3px;}
 
+/* PHOTO */
+.photo-box{border:3px dashed var(--border);border-radius:var(--radius);padding:22px 14px;text-align:center;background:#fff;cursor:pointer;}
+.photo-box.has-photo{border-color:var(--green);border-style:solid;background:#D5F5E3;}
+.photo-icon{font-size:32px;margin-bottom:6px;}
+.photo-label{font-size:13px;font-weight:600;color:var(--muted);}
+.photo-preview{max-width:100%;border-radius:8px;margin-top:8px;display:none;}
+
+.divider{height:1px;background:var(--border);margin:12px 0;}
+.loading{text-align:center;padding:24px;color:var(--muted);font-size:14px;}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:14px;font-style:italic;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:10px;padding:13px 15px;margin-bottom:12px;border:2px solid var(--border);}
+.toggle-label{font-size:14px;font-weight:600;}
+.toggle-label .sub{font-size:11px;color:var(--muted);font-weight:400;}
+.toggle{width:50px;height:27px;background:#ccc;border-radius:14px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;width:21px;height:21px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle.on::after{left:26px;}
 </style>
 </head>
 <body>
 
-<!-- PASSWORD SCREEN -->
-<div id="lock-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#8B0000;z-index:9999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:white;border-radius:16px;padding:32px 28px;width:90%;max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:#8B0000;margin-bottom:4px;">MAVERICK SPOOLING SERVICES</div>
-    <div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px;">Field Billing Tool</div>
-    <div style="font-size:40px;margin-bottom:16px;">🔒</div>
-    <input type="password" id="pw-input" placeholder="Enter password"
-      style="width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:18px;text-align:center;font-family:'DM Sans',sans-serif;margin-bottom:10px;"
-      onkeydown="if(event.key==='Enter') checkPassword()">
-    <div id="pw-error" style="color:#8B0000;font-size:13px;font-weight:700;margin-bottom:10px;display:none;">❌ Wrong password. Try again.</div>
-    <button onclick="checkPassword()"
-      style="width:100%;padding:16px;background:#8B0000;color:white;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;">
-      UNLOCK
-    </button>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div style="font-size:48px;margin-bottom:8px;">🤠</div>
+    <div class="login-logo">MAVERICK SPOOLING</div>
+    <div class="login-sub">Services Platform</div>
+    <input type="text" id="login-user" class="login-field" placeholder="Username" autocomplete="username" autocapitalize="none">
+    <input type="password" id="login-pass" class="login-field" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="login-error" class="login-error"></div>
+    <div id="login-loading" style="color:var(--blue);font-size:13px;margin-bottom:10px;display:none;">⏳ Signing in...</div>
+    <button class="login-btn" onclick="doLogin()">SIGN IN</button>
   </div>
 </div>
 
-<div class="app-header">
+<!-- HEADER -->
+<div class="app-header" style="display:none;" id="app-header">
   <div>
     <h1>Maverick Spooling</h1>
-    <div class="sub">Field Billing Tool</div>
+    <div class="sub" id="header-sub">Field Platform</div>
   </div>
-  <div style="font-family:'Bebas Neue';font-size:13px;opacity:0.7;letter-spacing:1px;text-align:right;">
-    <div id="hdr-cust">No Customer</div>
-    <div id="hdr-inv" style="font-size:11px;">No Invoice #</div>
-  </div>
+  <div class="user-badge" id="user-badge"></div>
 </div>
 
-<div class="steps">
-  <div class="step-btn active" onclick="goTo(0)">1 · Job Info</div>
-  <div class="step-btn" onclick="goTo(1)">2 · Hours</div>
-  <div class="step-btn" onclick="goTo(2)">3 · Parts</div>
-  <div class="step-btn" onclick="goTo(3)">4 · Summary</div>
+<!-- NAV -->
+<div class="nav-tabs" style="display:none;" id="nav-tabs">
+  <div class="nav-tab active" onclick="goTo(0)" id="tab-0">📋 Job</div>
+  <div class="nav-tab" onclick="goTo(1)" id="tab-1">⏱ Time</div>
+  <div class="nav-tab" onclick="goTo(2)" id="tab-2">📍 Route</div>
+  <div class="nav-tab" onclick="goTo(3)" id="tab-3">📁 My Jobs</div>
+  <div class="nav-tab" onclick="goTo(4)" id="tab-4">💵 Earnings</div>
+  <div class="nav-tab owner-only" onclick="goTo(5)" id="tab-5" style="display:none;">📊 Dashboard</div>
+  <div class="nav-tab owner-only" onclick="goTo(6)" id="tab-6" style="display:none;">💼 Payroll</div>
 </div>
 
-<!-- ══ SCREEN 1: JOB INFO ══ -->
+<!-- ══ SCREEN 0: NEW JOB ══ -->
 <div class="screen active" id="screen-0">
-  <div class="card">
-    <div class="card-title">Job Information</div>
 
-    <!-- Invoice # + Dispatch Job # + Date all on one row -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+  <!-- Job Info -->
+  <div class="card">
+    <div class="card-title red">Job Information</div>
+    <div class="field-row-3">
       <div class="field" style="margin-bottom:0;">
         <label>Invoice #</label>
-        <input type="text" id="inv-num" placeholder="e.g. 306325" inputmode="numeric" oninput="document.getElementById('hdr-inv').textContent=this.value||'No Invoice #'">
+        <input type="text" id="inv-num" placeholder="306325" inputmode="numeric" oninput="updateHeader()">
       </div>
       <div class="field" style="margin-bottom:0;">
-        <label>Dispatch Job #</label>
-        <input type="text" id="dispatch-num" placeholder="e.g. 44355000">
+        <label>Dispatch #</label>
+        <input type="text" id="dispatch-num" placeholder="44355000">
       </div>
       <div class="field" style="margin-bottom:0;">
         <label>Date</label>
         <input type="date" id="inv-date">
       </div>
     </div>
-
-    <!-- Oil Company = billing dropdown -->
+    <div class="divider"></div>
     <div class="field">
       <label>Oil Company — Who Are We Billing?</label>
-      <select id="customer" onchange="customerChanged()"
-        style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);background:var(--input-bg);appearance:none;cursor:pointer;">
+      <select id="customer" onchange="customerChanged()">
         <option value="">— Select Oil Company —</option>
         <option value="Pioneer">Pioneer / ExxonMobil</option>
         <option value="Ovintiv">Ovintiv</option>
@@ -253,1319 +248,1335 @@
         <option value="Permian">Permian Resources</option>
         <option value="Valiant">Valiant</option>
         <option value="Flowco">Flowco</option>
-        <option value="Standard">Standard (Black Swan / Blue Ox / Centennial / Endeavor / Halliburton / High Peak / Moriah / Pinon / Reliance / TRP)</option>
+        <option value="Standard">Standard</option>
       </select>
     </div>
-
-    <!-- Cable Company (free text) + Well # -->
     <div class="field-row">
       <div class="field">
         <label>Cable Company</label>
-        <input type="text" id="cable-co" placeholder="e.g. Summit, Flint Energy">
+        <input type="text" id="cable-co" placeholder="e.g. Summit">
       </div>
-      <div class="field"><label>Well Number</label><input type="text" id="well-num"></div>
-    </div>
-
-    <div class="field-row">
-      <div class="field"><label>Lease Name</label><input type="text" id="lease-name"></div>
-      <div class="field"><label>Cable Co. Location</label><input type="text" id="cable-loc"></div>
+      <div class="field">
+        <label>Well Number</label>
+        <input type="text" id="well-num" placeholder="e.g. 2H">
+      </div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Spooler Name</label><input type="text" id="spooler-name"></div>
-      <div class="field"><label>Service Tech</label><input type="text" id="tech-name"></div>
+      <div class="field">
+        <label>Lease Name</label>
+        <input type="text" id="lease-name" placeholder="e.g. Robb Stone">
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="cable-loc" placeholder="e.g. Midland">
+      </div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Start Time</label><input type="time" id="start-time"></div>
-      <div class="field"><label>Stop Time</label><input type="time" id="stop-time"></div>
+      <div class="field">
+        <label>Spooler</label>
+        <input type="text" id="spooler-name">
+      </div>
+      <div class="field">
+        <label>Service Tech</label>
+        <input type="text" id="tech-name">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Start Time</label>
+        <input type="time" id="start-time">
+      </div>
+      <div class="field">
+        <label>Stop Time</label>
+        <input type="time" id="stop-time">
+      </div>
     </div>
     <div class="field">
       <label>Job Type</label>
       <select id="job-type">
-        <option value="Pull">Pull</option><option value="Run">Run</option>
-        <option value="Install">Install</option><option value="Canceled">Canceled</option>
-        <option value="Combo Spooler">Combo Spooler</option><option value="Service">Service</option>
+        <option value="Pull">Pull</option>
+        <option value="Run">Run</option>
+        <option value="Install">Install</option>
+        <option value="Canceled">Canceled</option>
+        <option value="Combo Spooler">Combo Spooler</option>
+        <option value="Service">Service</option>
       </select>
     </div>
-    <div class="field"><label>Notes</label><textarea id="notes" rows="2" style="resize:none;padding:12px 14px;font-size:15px;border:2px solid var(--border);border-radius:10px;font-family:inherit;background:var(--input-bg);width:100%;"></textarea></div>
-  </div>
-  <button class="btn btn-primary" onclick="goTo(1)">Next: Enter Hours →</button>
-</div>
-
-<!-- ══ SCREEN 2: HOURS ══ -->
-<div class="screen" id="screen-1">
-
-  <!-- MASTER RATE SELECTOR -->
-  <div class="card">
-    <div class="card-title">Select Job Setup</div>
-    <div class="notice" style="margin-bottom:12px;">
-      Pick one — this locks in the hourly rate for all 4 hour slots automatically.
-    </div>
-    <select id="job-setup" onchange="jobSetupChanged()"
-      style="width:100%;padding:16px;font-size:16px;font-weight:700;border:2px solid var(--border);border-radius:10px;background:var(--input-bg);font-family:inherit;appearance:none;cursor:pointer;">
-      <option value="">— Select Job Setup —</option>
-    </select>
-
-    <!-- LOCKED RATE DISPLAY -->
-    <div id="master-rate-display" style="display:none;margin-top:14px;background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:14px 16px;text-align:center;">
-      <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">🔒 Locked Rate — Applied to All Hour Slots</div>
-      <div style="font-size:28px;font-weight:800;color:var(--dark-red);" id="master-rate-value">$0.00 / hr</div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="notes" rows="2" style="resize:none;padding:12px;font-size:14px;border:2px solid var(--border);border-radius:10px;background:#EBF5FB;width:100%;font-family:inherit;"></textarea>
     </div>
   </div>
 
-  <!-- TECH 1 HOURS -->
-  <div class="card" id="hours-card" style="display:none;">
-    <div class="card-title">Tech 1 — Enter Hours</div>
-
-    <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:6px;padding:0 4px;">
-      <div></div>
-      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Hours</div>
+  <!-- Hours -->
+  <div class="card" id="hours-section" style="display:none;">
+    <div class="card-title red">Hours — Tech 1</div>
+    <div class="field">
+      <label>Job Setup / Rate Type</label>
+      <select id="job-setup" onchange="setupChanged()">
+        <option value="">— Select Rate Type —</option>
+      </select>
+    </div>
+    <div id="rate-badge-div" style="display:none;">
+      <div class="rate-badge">
+        <div class="rl">🔒 Locked Rate</div>
+        <div class="rv" id="rate-badge-val">$0.00 / hr</div>
+      </div>
     </div>
 
-    <div class="hour-entry" id="row-load">
-      <div class="hour-label">Load / Unload</div>
-      <input type="number" class="hour-input" id="t1-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry" id="row-travel">
-      <div class="hour-label">Travel Time</div>
-      <input type="number" class="hour-input" id="t1-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry" id="row-standby">
-      <div class="hour-label">Standby Time</div>
-      <input type="number" class="hour-input" id="t1-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry" id="row-spool">
-      <div class="hour-label">Spooling Labor</div>
-      <input type="number" class="hour-input" id="t1-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-
-    <div style="background:var(--light);border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:13px;font-weight:700;color:var(--muted);">Tech 1 Hours Subtotal</span>
-      <span style="font-size:20px;font-weight:800;color:var(--dark-red);" id="t1-hours-sub">$0.00</span>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- MILEAGE -->
-    <div style="margin-top:4px;">
-      <div style="font-size:13px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Spooler Miles</div>
-      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;">
-        <div style="background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 14px;">
-          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">🔒 Mile Rate</div>
-          <div style="font-size:20px;font-weight:800;color:var(--dark-red);margin-top:2px;" id="t1-mile-rate-display">$0.00 / mi</div>
+    <div id="hour-slots" style="display:none;">
+      <div class="hour-slot"><div class="hour-label">Load / Unload</div><input type="number" class="hour-input" id="t1-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot"><div class="hour-label">Travel Time</div><input type="number" class="hour-input" id="t1-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot"><div class="hour-label">Standby Time</div><input type="number" class="hour-input" id="t1-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot"><div class="hour-label">Spooling Labor</div><input type="number" class="hour-input" id="t1-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="divider"></div>
+      <div class="hour-slot">
+        <div>
+          <div class="hour-label">Spooler Miles</div>
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:2px;" id="mile-rate-lbl">$0.00 / mi</div>
         </div>
         <input type="number" class="hour-input" id="t1-miles" min="0" step="1" value="" placeholder="0" inputmode="numeric" oninput="calcAll()">
       </div>
-      <div style="text-align:right;margin-top:8px;font-size:15px;font-weight:700;color:var(--dark-red);">
-        Miles Total: <span id="t1-miles-total">$0.00</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECOND TECH TOGGLE -->
-  <div class="toggle-row" id="tech2-toggle-row" style="display:none;">
-    <div>
-      <div class="toggle-label">Second Tech on this job?</div>
-      <div class="toggle-label sub">Same rate type — separate hours &amp; mileage</div>
-    </div>
-    <div class="toggle" id="tog-t2" onclick="toggleTech2()"></div>
-  </div>
-
-  <!-- TECH 2 -->
-  <div class="card" id="t2-card" style="display:none;">
-    <div class="card-title" style="color:var(--green);">Tech 2 — Enter Hours</div>
-
-    <!-- TECH 2 RATE SELECTOR -->
-    <div style="margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Tech 2 Rate (defaults to same as Tech 1)</div>
-      <select id="t2-job-setup" onchange="tech2SetupChanged()"
-        style="width:100%;padding:14px;font-size:15px;font-weight:700;border:2px solid #A9DFBF;border-radius:10px;background:#EAF5EA;font-family:inherit;appearance:none;cursor:pointer;color:var(--text);">
-        <option value="">— Same as Tech 1 —</option>
-      </select>
-      <div id="t2-rate-display" style="margin-top:10px;background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 16px;text-align:center;display:none;">
-        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">🔒 Tech 2 Locked Rate</div>
-        <div style="font-size:24px;font-weight:800;color:var(--dark-red);" id="t2-rate-value">$0.00 / hr</div>
+      <div style="background:var(--light);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-size:12px;font-weight:700;color:var(--muted);">Tech 1 Subtotal</span>
+        <span style="font-size:18px;font-weight:800;color:var(--red);" id="t1-sub">$0.00</span>
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:6px;padding:0 4px;">
-      <div></div>
-      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Hours</div>
-    </div>
-
-    <div class="hour-entry t2">
-      <div class="hour-label">Load / Unload</div>
-      <input type="number" class="hour-input" id="t2-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry t2">
-      <div class="hour-label">Travel Time</div>
-      <input type="number" class="hour-input" id="t2-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry t2">
-      <div class="hour-label">Standby Time</div>
-      <input type="number" class="hour-input" id="t2-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-    <div class="hour-entry t2">
-      <div class="hour-label">Spooling Labor</div>
-      <input type="number" class="hour-input" id="t2-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()">
-    </div>
-
-    <div style="background:#EAF5EA;border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:13px;font-weight:700;color:var(--muted);">Tech 2 Hours Subtotal</span>
-      <span style="font-size:20px;font-weight:800;color:var(--green);" id="t2-hours-sub">$0.00</span>
-    </div>
-
+    <!-- Tech 2 -->
     <div class="divider"></div>
-
-    <div style="margin-top:4px;">
-      <div style="font-size:13px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Tech 2 — Spooler Miles</div>
-      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;">
-        <div style="background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 14px;">
-          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">🔒 Mile Rate</div>
-          <div style="font-size:20px;font-weight:800;color:var(--dark-red);margin-top:2px;" id="t2-mile-rate-display">$0.00 / mi</div>
+    <div class="toggle-row">
+      <div><div class="toggle-label">Second Tech?</div><div class="toggle-label sub">Same job, different hours</div></div>
+      <div class="toggle" id="tog-t2" onclick="toggleT2()"></div>
+    </div>
+    <div id="t2-section" style="display:none;">
+      <div class="card-title green" style="margin-top:8px;">Tech 2 — Hours</div>
+      <div class="field">
+        <label>Tech 2 Rate (leave blank = same as Tech 1)</label>
+        <select id="t2-setup" onchange="t2SetupChanged()">
+          <option value="">— Same as Tech 1 —</option>
+        </select>
+      </div>
+      <div id="t2-rate-badge" style="display:none;">
+        <div class="rate-badge" style="background:#EAF5EA;border-color:#A9DFBF;">
+          <div class="rl">🔒 Tech 2 Rate</div>
+          <div class="rv" id="t2-rate-val" style="color:var(--green);">$0.00 / hr</div>
         </div>
+      </div>
+      <div class="hour-slot" style="background:#EAF5EA;"><div class="hour-label">Load / Unload</div><input type="number" class="hour-input" id="t2-load" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot" style="background:#EAF5EA;"><div class="hour-label">Travel Time</div><input type="number" class="hour-input" id="t2-travel" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot" style="background:#EAF5EA;"><div class="hour-label">Standby Time</div><input type="number" class="hour-input" id="t2-standby" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="hour-slot" style="background:#EAF5EA;"><div class="hour-label">Spooling Labor</div><input type="number" class="hour-input" id="t2-spool" min="0" step="0.25" value="" placeholder="0" inputmode="decimal" oninput="calcAll()"></div>
+      <div class="divider"></div>
+      <div class="hour-slot" style="background:#EAF5EA;">
+        <div><div class="hour-label">Tech 2 Miles</div><div style="font-size:11px;color:var(--green);font-weight:700;margin-top:2px;" id="t2-mile-lbl">$0.00 / mi</div></div>
         <input type="number" class="hour-input" id="t2-miles" min="0" step="1" value="" placeholder="0" inputmode="numeric" oninput="calcAll()">
       </div>
-      <div style="text-align:right;margin-top:8px;font-size:15px;font-weight:700;color:var(--green);">
-        Miles Total: <span id="t2-miles-total">$0.00</span>
+      <div style="background:#EAF5EA;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-size:12px;font-weight:700;color:var(--muted);">Tech 2 Subtotal</span>
+        <span style="font-size:18px;font-weight:800;color:var(--green);" id="t2-sub">$0.00</span>
       </div>
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
-    <button class="btn btn-outline" onclick="goTo(0)">← Back</button>
-    <button class="btn btn-primary" onclick="goTo(2)">Next: Parts →</button>
+  <!-- Parts -->
+  <div class="card" id="parts-section" style="display:none;">
+    <div class="card-title red">Banding / Spooling Parts</div>
+    <div id="bs-parts"></div>
+    <div class="divider"></div>
+    <div class="card-title" style="color:var(--orange);margin-top:4px;">CT Miscellaneous Parts</div>
+    <div id="ct-parts"></div>
+  </div>
+
+  <!-- Summary & Submit -->
+  <div class="card" id="totals-section" style="display:none;">
+    <div class="card-title red">Invoice Totals</div>
+    <div class="sum-row"><span class="sl">Tech 1</span><span class="sv" id="fin-t1">$0.00</span></div>
+    <div class="sum-row" id="fin-t2-row" style="display:none;"><span class="sl">Tech 2</span><span class="sv" id="fin-t2">$0.00</span></div>
+    <div class="sum-row"><span class="sl">Banding & Spooling Parts</span><span class="sv" id="fin-bs">$0.00</span></div>
+    <div class="sum-row"><span class="sl">CT Parts</span><span class="sv" id="fin-ct">$0.00</span></div>
+    <div class="sum-row hl"><span class="sl" style="font-size:15px;">TOTAL INVOICE</span><span class="sv" id="fin-grand" style="font-size:20px;">$0.00</span></div>
+
+    <!-- Carbon Copy Cheat Sheet -->
+    <div class="divider"></div>
+    <div class="cc-box">
+      <div class="cc-title">📋 Carbon Copy — Write These</div>
+      <div id="cc-rows"></div>
+    </div>
+
+    <div class="status" id="submit-status"></div>
+    <button class="btn btn-blue" id="submit-btn" onclick="submitJob()">📤 Submit Job to Office</button>
+    <button class="btn btn-gray" onclick="resetJob()">Start New Job</button>
   </div>
 </div>
 
-<!-- ══ SCREEN 3: PARTS ══ -->
+<!-- ══ SCREEN 1: TIMESHEET ══ -->
+<div class="screen" id="screen-1">
+  <div class="clock-box">
+    <div class="clock-time" id="clock-time">00:00:00</div>
+    <div class="clock-date" id="clock-date"></div>
+    <div class="clock-status out" id="clock-status">● Not Clocked In</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Clock In / Out</div>
+    <div class="field">
+      <label>Job Invoice # (optional)</label>
+      <input type="text" id="ts-invoice" placeholder="e.g. 306325" inputmode="numeric">
+    </div>
+    <div class="btn-grid">
+      <button class="btn btn-green" id="clock-in-btn" onclick="doClock('in')">🟢 Clock In</button>
+      <button class="btn btn-red" id="clock-out-btn" onclick="doClock('out')" style="display:none;">🔴 Clock Out</button>
+    </div>
+    <div class="status" id="clock-status-msg"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">This Pay Period</div>
+    <div id="ts-entries"><div class="loading">Loading timesheet...</div></div>
+    <div style="background:var(--light);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;margin-top:8px;">
+      <span style="font-size:13px;font-weight:700;color:var(--muted);">Total Hours</span>
+      <span style="font-size:20px;font-weight:800;color:var(--blue);" id="ts-total-hours">0.00</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: ROUTE ══ -->
 <div class="screen" id="screen-2">
-  <div class="notice">Enter quantity used. Zero = not used. Rates auto-load for your customer.</div>
-  <div class="card"><div class="card-title">Banding / Spooling Parts</div><div id="parts-bs"></div></div>
-  <div class="card"><div class="card-title">CT Miscellaneous Parts</div><div id="parts-ct"></div></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <button class="btn btn-outline" onclick="goTo(1)">← Back</button>
-    <button class="btn btn-primary" onclick="goTo(3)">Summary →</button>
+  <div class="notice">Set your stops then open Google Maps. Screenshot your completed route and upload it here.</div>
+
+  <div class="card">
+    <div class="card-title">Starting Point</div>
+    <select class="field" style="width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#EBF5FB;appearance:none;" id="start-point">
+      <option value="2703 S County Rd 1207, Midland, TX 79706">GW Yard — Midland TX</option>
+      <option value="custom">Custom / Edit Address</option>
+    </select>
+    <div id="custom-start-div" style="display:none;margin-top:10px;">
+      <input type="text" style="width:100%;padding:13px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#EBF5FB;" id="custom-start-addr" placeholder="Enter starting address">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cable Shop</div>
+    <select style="width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#EBF5FB;appearance:none;" id="rt-cable-shop" onchange="checkMapBtn()">
+      <option value="">— Select Cable Shop —</option>
+      <option value="6206 S County Rd 1270, Midland, TX 79706">Innovex — Midland</option>
+      <option value="801 SW Mustang Dr, Andrews, TX 79714">Summit — Andrews</option>
+      <option value="2340 US-385, Andrews, TX 79714">Baker Hughes — Andrews</option>
+      <option value="2806 N County Rd 1148, Midland, TX 79705">Valiant — Midland</option>
+      <option value="12220 TX-191 Frontage, Midland, TX 79707">Endurance Lift — Midland</option>
+      <option value="1440 Windway St, Odessa, TX 79763">ChampionX — Odessa</option>
+      <option value="custom_shop">Other</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Job Location</div>
+    <div class="field">
+      <label>Search Saved Wells</label>
+      <input type="text" id="rt-well-search" placeholder="Type well name..." oninput="searchWellsRT()">
+      <div id="rt-well-results"></div>
+    </div>
+    <div class="btn-grid" style="margin-bottom:10px;">
+      <button class="btn btn-blue" style="font-size:14px;padding:13px;" onclick="getGPS()">📍 My Location</button>
+      <button class="btn btn-outline" style="font-size:14px;padding:13px;" onclick="showPaste()">📋 Paste Link</button>
+    </div>
+    <div id="paste-div" style="display:none;">
+      <input type="text" style="width:100%;padding:13px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;margin-bottom:8px;" id="maps-paste" placeholder="Paste Google Maps URL..." oninput="extractCoords()">
+    </div>
+    <div class="field-row" style="margin-bottom:8px;">
+      <input type="number" style="padding:12px;border:2px solid var(--border);border-radius:8px;font-size:15px;background:#EBF5FB;" id="rt-lat" placeholder="Latitude" step="0.000001">
+      <input type="number" style="padding:12px;border:2px solid var(--border);border-radius:8px;font-size:15px;background:#EBF5FB;" id="rt-lng" placeholder="Longitude" step="0.000001">
+    </div>
+    <button class="btn-sm" style="background:var(--blue);color:#fff;" onclick="useManualCoords()">Use These Coords</button>
+    <div id="rt-coord-display" style="display:none;margin-top:10px;">
+      <div class="rate-badge" style="background:#D5F5E3;border-color:#A9DFBF;">
+        <div class="rl">📍 Location Locked</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);" id="rt-coord-val">—</div>
+      </div>
+    </div>
+
+    <!-- Save new well -->
+    <div id="save-well-div" style="display:none;margin-top:10px;">
+      <div class="notice orange">💾 New location — save to Well Encyclopedia?</div>
+      <div class="field"><label>Well Name</label><input type="text" id="new-well-name" placeholder="e.g. Robb Stone W34B"></div>
+      <div class="field-row">
+        <div class="field"><label>Lease</label><input type="text" id="new-well-lease"></div>
+        <div class="field">
+          <label>Customer</label>
+          <select id="new-well-cust" style="padding:13px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;appearance:none;width:100%;">
+            <option value="">—</option>
+            <option value="Pioneer">Pioneer</option><option value="Ovintiv">Ovintiv</option>
+            <option value="Diamondback">Diamondback</option><option value="Hibernia">Hibernia</option>
+            <option value="Permian">Permian</option><option value="Valiant">Valiant</option>
+            <option value="Flowco">Flowco</option><option value="Standard">Standard</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="saveWell()">💾 Save to Encyclopedia</button>
+    </div>
+  </div>
+
+  <button class="btn btn-red" id="open-maps-btn" style="display:none;" onclick="openMaps()">🗺️ Open Route in Google Maps</button>
+
+  <div class="card" id="screenshot-card" style="display:none;">
+    <div class="card-title">Upload Route Screenshot</div>
+    <div class="field"><label>Invoice # (links to job)</label><input type="text" id="rt-invoice" placeholder="e.g. 306325" inputmode="numeric"></div>
+    <div class="photo-box" id="rt-photo-box" onclick="document.getElementById('rt-photo-input').click()">
+      <div class="photo-icon">📸</div>
+      <div class="photo-label">Tap to select screenshot</div>
+      <img id="rt-photo-preview" class="photo-preview">
+    </div>
+    <input type="file" id="rt-photo-input" accept="image/*" style="display:none;" onchange="handleRtPhoto(event)">
+    <button class="btn btn-outline" style="margin-top:8px;" onclick="pastePhoto('rt')">📋 Paste Screenshot</button>
+    <div class="status" id="rt-status"></div>
+    <button class="btn btn-green" onclick="uploadRtPhoto()">☁️ Save to Drive</button>
+  </div>
+
+  <!-- Wells Encyclopedia -->
+  <div class="card">
+    <div class="card-title">📚 Well Encyclopedia</div>
+    <input type="text" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;margin-bottom:10px;" id="well-search" placeholder="Search wells..." oninput="renderWells()">
+    <div id="well-list"><div class="loading">Loading wells...</div></div>
   </div>
 </div>
 
-<!-- ══ SCREEN 4: SUMMARY ══ -->
+<!-- ══ SCREEN 3: MY JOBS ══ -->
 <div class="screen" id="screen-3">
-
-  <!-- BIG TOTAL -->
-  <div class="total-box">
-    <div class="total-label">★ TOTAL INVOICE ★</div>
-    <div class="total-amount" id="sum-grand">$0.00</div>
-    <div class="total-sub">Write this in the TOTAL INVOICE box on the carbon copy</div>
+  <div class="card">
+    <div class="card-title">Search Jobs</div>
+    <input type="text" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#EBF5FB;" id="job-search" placeholder="Invoice #, customer, well name..." oninput="filterJobs()">
   </div>
+  <div id="job-list"><div class="loading">Loading jobs...</div></div>
 
-  <!-- JOB INFO CHEAT SHEET -->
-  <div class="cc-box">
-    <div class="cc-title">📋 Job Info — Fill Top of Carbon Copy</div>
-    <div class="cc-row"><span class="cc-f">Cable Company</span><span class="cc-v" id="cc-cust">—</span></div>
-    <div class="cc-row"><span class="cc-f">Cable Co. Location</span><span class="cc-v" id="cc-loc">—</span></div>
-    <div class="cc-row"><span class="cc-f">Oil Company</span><span class="cc-v" id="cc-oil">—</span></div>
-    <div class="cc-row"><span class="cc-f">Lease Name</span><span class="cc-v" id="cc-lease">—</span></div>
-    <div class="cc-row"><span class="cc-f">Well #</span><span class="cc-v" id="cc-well">—</span></div>
-    <div class="cc-row"><span class="cc-f">Invoice #</span><span class="cc-v" id="cc-inv">—</span></div>
-    <div class="cc-row"><span class="cc-f">Dispatch Job No.</span><span class="cc-v" id="cc-dispatch">—</span></div>
-    <div class="cc-row"><span class="cc-f">Date</span><span class="cc-v" id="cc-date">—</span></div>
-    <div class="cc-row"><span class="cc-f">Spooler</span><span class="cc-v" id="cc-spooler">—</span></div>
-    <div class="cc-row"><span class="cc-f">Service Tech</span><span class="cc-v" id="cc-tech">—</span></div>
-    <div class="cc-row"><span class="cc-f">Start / Stop Time</span><span class="cc-v" id="cc-times">—</span></div>
-    <div class="cc-row"><span class="cc-f">Job Type</span><span class="cc-v" id="cc-jobtype">—</span></div>
-  </div>
-
-  <!-- CARBON COPY ROW CHEAT SHEET -->
-  <div class="sum-box">
-    <div class="sum-hdr">✏️ Carbon Copy Rows — Tech 1</div>
-    <div style="display:grid;grid-template-columns:1fr 70px 80px 90px;gap:0;background:#1B3A6B;padding:8px 14px;">
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Row</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Hrs/Mi</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
+  <!-- Job detail -->
+  <div id="job-detail" style="display:none;">
+    <div class="card">
+      <div class="card-title" id="detail-title">Job Details</div>
+      <div id="detail-info"></div>
     </div>
-    <div id="cc-t1-rows"></div>
-  </div>
-
-  <!-- TECH 2 OVERFLOW NOTE -->
-  <div class="sum-box" id="sum-t2-box" style="display:none;">
-    <div class="sum-hdr" style="background:var(--green);">✏️ Overflow Rows — Tech 2 (write in spare rows)</div>
-    <div style="display:grid;grid-template-columns:1fr 70px 80px 90px;gap:0;background:#1E8449;padding:8px 14px;">
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Row</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Hrs/Mi</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
-    </div>
-    <div id="cc-t2-rows"></div>
-    <div class="sum-row hl"><span class="sl">Tech 2 Subtotal</span><span class="sv" id="sum-t2-tot">$0.00</span></div>
-  </div>
-
-  <!-- BANDS SECTION -->
-  <div class="sum-box" id="sum-bs-box">
-    <div class="sum-hdr">✏️ Bands Section (bottom of carbon copy)</div>
-    <div style="display:grid;grid-template-columns:1fr 55px 80px 90px;gap:0;background:#1B3A6B;padding:8px 14px;">
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;">Item</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Qty</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:center;">Rate</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;text-align:right;">Total</span>
-    </div>
-    <div id="cc-bs-rows"><div class="sum-row"><span class="sl" style="font-style:italic;">No banding/spooling parts used</span></div></div>
-    <div class="sum-row hl"><span class="sl">Banding &amp; Spooling Parts Total</span><span class="sv" id="sum-bs-tot">$0.00</span></div>
-  </div>
-
-  <!-- CT PARTS — single line on ticket -->
-  <div class="sum-box" id="sum-ct-box">
-    <div class="sum-hdr" style="background:var(--orange);">✏️ Cap String Total (write as one line on carbon copy)</div>
-    <div id="cc-ct-rows"><div class="sum-row"><span class="sl" style="font-style:italic;">No CT parts used</span></div></div>
-    <div class="sum-row hl" style="background:#FFF3E0;">
-      <span class="sl" style="color:var(--orange);">Write on ticket: "Cap String Total"</span>
-      <span class="sv" style="color:var(--orange);font-size:18px;" id="sum-ct-tot">$0.00</span>
+    <div class="card">
+      <div class="card-title">Add Photo to This Job</div>
+      <div class="field">
+        <label>Photo Type</label>
+        <select id="detail-photo-type" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;appearance:none;">
+          <option value="route">Route Screenshot</option>
+          <option value="jobsite">Job Site</option>
+          <option value="cable">Cable</option>
+          <option value="equipment">Equipment</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="photo-box" id="detail-photo-box" onclick="document.getElementById('detail-photo-input').click()">
+        <div class="photo-icon">📸</div>
+        <div class="photo-label">Tap to select photo</div>
+        <img id="detail-photo-preview" class="photo-preview">
+      </div>
+      <input type="file" id="detail-photo-input" accept="image/*" style="display:none;" onchange="handleDetailPhoto(event)">
+      <button class="btn btn-outline" style="margin-top:8px;" onclick="pastePhoto('detail')">📋 Paste Photo</button>
+      <div class="status" id="detail-photo-status"></div>
+      <button class="btn btn-green" onclick="uploadDetailPhoto()">☁️ Save Photo to Drive</button>
     </div>
   </div>
+</div>
 
-  <!-- GRAND TOTAL BREAKDOWN -->
-  <div class="sum-box">
-    <div class="sum-hdr">Invoice Breakdown</div>
-    <div class="sum-row"><span class="sl">Tech 1 — Hours &amp; Miles</span><span class="sv" id="fin-t1">$0.00</span></div>
-    <div class="sum-row" id="fin-t2-row" style="display:none;"><span class="sl">Tech 2 — Hours &amp; Miles</span><span class="sv" id="fin-t2">$0.00</span></div>
-    <div class="sum-row"><span class="sl">Banding &amp; Spooling Parts</span><span class="sv" id="fin-bs">$0.00</span></div>
-    <div class="sum-row"><span class="sl">CT / Cap String Parts</span><span class="sv" id="fin-ct">$0.00</span></div>
-    <div class="sum-row hl" style="padding:16px 18px;">
-      <span class="sl" style="font-size:17px;">TOTAL INVOICE</span>
-      <span class="sv" id="fin-grand" style="font-size:24px;color:var(--dark-red);">$0.00</span>
+<!-- ══ SCREEN 4: EARNINGS ══ -->
+<div class="screen" id="screen-4">
+  <div id="earnings-content"><div class="loading">Loading earnings...</div></div>
+</div>
+
+<!-- ══ SCREEN 5: DASHBOARD (OWNER) ══ -->
+<div class="screen" id="screen-5">
+  <div id="dashboard-content"><div class="loading">Loading dashboard...</div></div>
+</div>
+
+<!-- ══ SCREEN 6: PAYROLL (OWNER) ══ -->
+<div class="screen" id="screen-6">
+  <div class="card">
+    <div class="card-title">Payroll Management</div>
+    <div class="notice">Current pay period payroll for all active employees.</div>
+    <button class="btn btn-blue" onclick="loadPayroll()">🔄 Load Current Payroll</button>
+  </div>
+  <div id="payroll-content"></div>
+
+  <!-- Add Adjustment -->
+  <div class="card">
+    <div class="card-title">Add Adjustment / Bonus / Deduction</div>
+    <div class="field">
+      <label>Employee</label>
+      <select id="adj-emp" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;appearance:none;"></select>
     </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="adj-type" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#EBF5FB;appearance:none;">
+        <option value="bonus">Bonus</option>
+        <option value="deduction">Deduction</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <input type="text" id="adj-desc" placeholder="e.g. Performance bonus, Advance, Equipment">
+    </div>
+    <div class="field">
+      <label>Amount ($)</label>
+      <input type="number" id="adj-amount" placeholder="0.00" step="0.01" inputmode="decimal">
+    </div>
+    <div class="status" id="adj-status"></div>
+    <button class="btn btn-orange" onclick="addAdjustment()">➕ Add Adjustment</button>
   </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <button class="btn btn-outline" onclick="goTo(2)">← Back</button>
-    <button class="btn btn-green" onclick="window.print()">🖨 Print / PDF</button>
-  </div>
-
-  <button class="btn btn-primary" id="submit-btn" onclick="submitJob()" style="background:var(--blue);margin-top:4px;">
-    📤 Submit Job to Office
-  </button>
-  <div id="submit-status" style="display:none;border-radius:12px;padding:14px 16px;text-align:center;font-weight:700;font-size:15px;margin-bottom:10px;"></div>
-  <button class="btn btn-reset" onclick="resetAll()">Start New Job</button>
 </div>
 
 <script>
 // ══════════════════════════════════════════
-// DATA
+// CONFIG — REPLACE WITH YOUR DEPLOYED URL
 // ══════════════════════════════════════════
-const RATES = {
-  Pioneer: {
-    'Cable Tech — Production Rig':    { day:115, night:115 },
-    'Cable Tech — Completion Rig':    { day:135, night:135 },
-    'Combo Trailer — Production Rig': { day:130, night:130 },
-    'Combo Trailer — Completion Rig': { day:150, night:150 },
-    'Bander Only':                    { day: 90, night: 90 },
-  },
-  Ovintiv: {
-    'Cable Tech':    { day:115, night:140 },
-    'Combo Trailer': { day:135, night:155 },
-    'Bander Only':   { day: 90, night: 90 },
-  },
-  Diamondback: {
-    'Cable Tech':    { day:115, night:140 },
-    'Combo Trailer': { day:135, night:155 },
-    'Bander Only':   { day: 90, night: 90 },
-  },
-  Hibernia: {
-    'Cable Tech':    { day:103.50, night:126 },
-    'Combo Trailer': { day:121.50, night:155 },
-    'Bander Only':   { day: 81,   night: 81 },
-  },
-  Permian: {
-    'Cable Tech':    { day:103.50, night:126 },
-    'Combo Trailer': { day:121.50, night:139.50 },
-    'Bander Only':   { day: 81,   night: 81 },
-  },
-  Valiant: {
-    'Cable Tech':    { day:103.50, night:126 },
-    'Combo Trailer': { day:121.50, night:139.50 },
-    'Bander Only':   { day: 81,   night: 81 },
-  },
-  Flowco: {
-    'Cable Tech':    { day:115, night:140 },
-    'Combo Trailer': { day:135, night:155 },
-    'Bander Only':   { day: 90, night: 90 },
-  },
-  Standard: {
-    'Cable Tech':    { day:115, night:140 },
-    'Combo Trailer': { day:135, night:155 },
-    'Bander Only':   { day: 90, night: 90 },
-  },
-};
-
-const MILE_RATES = { Pioneer:3, Ovintiv:3, Diamondback:3, Hibernia:2.70, Permian:2.70, Valiant:2.70, Flowco:3, Standard:3 };
-
-const SLOTS = [
-  { id:'load',    label:'Load / Unload' },
-  { id:'travel',  label:'Travel Time' },
-  { id:'standby', label:'Standby Time' },
-  { id:'spool',   label:'Spooling Labor' },
-];
-
-const BS_PARTS = [
-  { name:"Cable Splicing Kit",             uom:"Each",    rates:{Pioneer:340,Ovintiv:340,Diamondback:340,Hibernia:306,Permian:306,Valiant:306,Flowco:340,Standard:340} },
-  { name:"Cable Splicing Kit (Lead-Lead)", uom:"Each",    rates:{Pioneer:433.50,Ovintiv:433.50,Diamondback:433.50,Hibernia:390.15,Permian:390.15,Valiant:390.15,Flowco:433.50,Standard:433.50} },
-  { name:"SST Bands",                      uom:"Each",    rates:{Pioneer:5.42,Ovintiv:5.42,Diamondback:5.42,Hibernia:5.42,Permian:4.88,Valiant:4.88,Flowco:5.00,Standard:5.00} },
-  { name:'SST Bands (3.5")',               uom:"Each",    rates:{Pioneer:6.09,Ovintiv:6.09,Diamondback:6.09,Hibernia:6.09,Permian:6.09,Valiant:6.09,Flowco:6.09,Standard:6.09} },
-  { name:'Monel Bands (2 3/8" - 2 7/8")', uom:"Each",    rates:{Pioneer:6.85,Ovintiv:7.00,Diamondback:7.00,Hibernia:6.30,Permian:6.30,Valiant:6.30,Flowco:6.30,Standard:7.00} },
-  { name:'Monel Bands (3.5")',             uom:"Each",    rates:{Pioneer:7.87,Ovintiv:7.87,Diamondback:7.87,Hibernia:7.87,Permian:7.87,Valiant:7.87,Flowco:7.87,Standard:7.87} },
-  { name:"Armor Repair",                   uom:"Each",    rates:{Pioneer:106.25,Ovintiv:106.25,Diamondback:106.25,Hibernia:106.25,Permian:95.63,Valiant:95.63,Flowco:106.25,Standard:106.25} },
-  { name:"Band Cutters",                   uom:"Each",    rates:{Pioneer:40.80,Ovintiv:40.80,Diamondback:41.00,Hibernia:41.00,Permian:36.90,Valiant:36.90,Flowco:41.00,Standard:41.00} },
-  { name:"Cable Clamp Install & Tools",    uom:"Each",    rates:{Pioneer:297.50,Ovintiv:300,Diamondback:300,Hibernia:270,Permian:270,Valiant:270,Flowco:300,Standard:300} },
-];
-
-const CT_PARTS = [
-  {name:'1/4" Tube Union',uom:"Each",rate:17.71},{name:'3/8" Tube Union',uom:"Each",rate:21.56},
-  {name:'3/8" x 1/4" Tube Union',uom:"Each",rate:20.79},{name:'Threaded Union 1/4"',uom:"Each",rate:17.50},
-  {name:'Threaded Union 3/8"',uom:"Each",rate:21.50},{name:'90° Elbow (1/4"T x 1/4"T)',uom:"Each",rate:21.56},
-  {name:'90° Elbow (3/8"T x 3/8"T)',uom:"Each",rate:22.72},{name:'1/4"T x 1/4"M NPT Male Conn.',uom:"Each",rate:12.32},
-  {name:'3/8"T x 1/4"M NPT Male Conn.',uom:"Each",rate:14.63},{name:'1/4"T x 3/8"M NPT Male Conn.',uom:"Each",rate:13.86},
-  {name:'3/8"T x 3/8"M NPT Male Conn.',uom:"Each",rate:15.02},{name:'1/4"T x 1/2"M NPT Male Conn.',uom:"Each",rate:16.17},
-  {name:'3/8"T x 1/2"M NPT Male Conn.',uom:"Each",rate:16.94},{name:'3/8"T x 3/4"M NPT Male Conn. 316',uom:"Each",rate:22.33},
-  {name:'1/4"T Union Tee',uom:"Each",rate:36.19},{name:'3/8"T Union Tee',uom:"Each",rate:38.50},
-  {name:'3/4"M x 1/2"F Hex Reducing Bushing',uom:"Each",rate:14.63},{name:'1/2"M x 3/8"F Hex Reducing Bushing',uom:"Each",rate:10.78},
-  {name:'3/8"M x 1/4"F Hex Reducing Bushing',uom:"Each",rate:9.24},{name:'1/4" Double Ferrule Set',uom:"Each",rate:4.00},
-  {name:'3/8" Double Ferrule Set',uom:"Each",rate:4.62},{name:'316 SS Chemical Injection Valve',uom:"Each",rate:762.30},
-  {name:'2 3/8" Injection Mandrel (Int/Ext)',uom:"Each",rate:650},{name:'2 7/8" Injection Mandrel (Int/Ext)',uom:"Each",rate:750},
-  {name:'ASV Manifold',uom:"Each",rate:778},{name:'1/4 2205 CT',uom:"Per Foot",rate:1.09},
-  {name:'3/8 2205 CT',uom:"Per Foot",rate:2.09},{name:'Injection Kit (mandrel+valve+manifold+5)',uom:"Each",rate:2378},
-  {name:'Pump Charge/Flush/Pressure Test Cap',uom:"Each",rate:300},{name:'Pressure Test Capillary Tubing',uom:"Each",rate:125},
-  {name:'Chemical Injection Manifold Kit',uom:"Each",rate:1007.57},
-];
+const API_URL = 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL';
 
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-let tech2Active = false;
+let STATE = {
+  user:       null,
+  token:      null,
+  rates:      {},
+  ctParts:    [],
+  wells:      [],
+  jobs:       [],
+  clockEntry: null,
+  tech2:      false,
+  jobCoords:  null,
+  selectedWell: null,
+  selectedJob: null,
+  rtPhotoB64: null,
+  detailPhotoB64: null,
+  currentScreen: 0,
+};
 
 // ══════════════════════════════════════════
-// NAV
+// API CALL
+// ══════════════════════════════════════════
+async function api(action, data={}) {
+  const payload = { action, token: STATE.token, ...data };
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch(e) {
+    return { success: false, error: 'Network error. Check your connection.' };
+  }
+}
+
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  const errEl    = document.getElementById('login-error');
+  const loadEl   = document.getElementById('login-loading');
+
+  if(!username || !password) { errEl.textContent='Enter username and password.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  loadEl.style.display='block';
+
+  const res = await api('login', { username, password });
+  loadEl.style.display='none';
+
+  if(!res.success) { errEl.textContent=res.error||'Login failed.'; errEl.style.display='block'; return; }
+
+  STATE.user  = res.user;
+  STATE.token = res.token;
+  sessionStorage.setItem('mav-token', res.token);
+  sessionStorage.setItem('mav-user',  JSON.stringify(res.user));
+
+  afterLogin();
+}
+
+function afterLogin() {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-header').style.display='flex';
+  document.getElementById('nav-tabs').style.display='flex';
+  document.getElementById('user-badge').textContent = STATE.user.isOwner ? '👑 Owner' : '🔧 '+STATE.user.name;
+  document.getElementById('header-sub').textContent = STATE.user.isOwner ? 'Owner Dashboard' : 'Field Tech';
+
+  // Show owner tabs
+  if(STATE.user.isOwner) {
+    document.querySelectorAll('.owner-only').forEach(el => el.style.display='flex');
+  }
+
+  // Pre-fill tech name
+  if(!STATE.user.isOwner) {
+    document.getElementById('spooler-name').value = STATE.user.name;
+  }
+
+  document.getElementById('inv-date').valueAsDate = new Date();
+  startClock();
+  loadRates();
+  loadJobs();
+  loadWells();
+  loadTimesheet();
+  loadEarnings();
+  if(STATE.user.isOwner) { loadDashboard(); loadEmployeesForPayroll(); }
+
+  // Handle URL prefill
+  prefillFromURL();
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
 // ══════════════════════════════════════════
 function goTo(idx) {
   document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
-  document.querySelectorAll('.step-btn').forEach((b,i) => {
-    b.classList.remove('active','done');
-    if(i===idx) b.classList.add('active');
-    else if(i<idx) b.classList.add('done');
-  });
-  if(idx===3) buildSummary();
+  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  STATE.currentScreen = idx;
   window.scrollTo(0,0);
+  if(idx===4) loadEarnings();
+  if(idx===5) loadDashboard();
 }
 
 // ══════════════════════════════════════════
-// BUILD HOUR SLOTS
+// RATES
 // ══════════════════════════════════════════
-
-// ══════════════════════════════════════════
-// JOB SETUP → RATE LOOKUP
-// ══════════════════════════════════════════
-// Rates are keyed by job-setup dropdown value.
-// Customer selection narrows which options show.
-// For non-Pioneer customers: single=CableTech, combo=ComboTrailer
-// Hour rate stored here; mileRate comes from MILE_RATES by customer.
-
-const SETUP_RATES = {
-  // Non-Pioneer customers (rates set dynamically by customer in jobSetupChanged)
-  single_day:         { label: 'Single Tech — Weekday',                    rateKey: 'single', period: 'day'   },
-  single_night:       { label: 'Single Tech — Night/Wknd/Holiday',         rateKey: 'single', period: 'night' },
-  combo_day:          { label: 'Combo Trailer — Weekday',                  rateKey: 'combo',  period: 'day'   },
-  combo_night:        { label: 'Combo Trailer — Night/Wknd/Holiday',       rateKey: 'combo',  period: 'night' },
-  bander_day:         { label: 'Bander Only — Weekday',                    rateKey: 'bander', period: 'day'   },
-  bander_night:       { label: 'Bander Only — Night/Wknd/Holiday',         rateKey: 'bander', period: 'night' },
-  // Pioneer-specific
-  pioneer_prod:       { label: 'Pioneer — Production Rig (Single)',        hourRate: 115, period: 'day'   },
-  pioneer_comp:       { label: 'Pioneer — Completion Rig (Single)',        hourRate: 135, period: 'day'   },
-  pioneer_combo_prod: { label: 'Pioneer — Combo Trailer Production Rig',   hourRate: 130, period: 'day'   },
-  pioneer_combo_comp: { label: 'Pioneer — Combo Trailer Completion Rig',   hourRate: 150, period: 'day'   },
-  pioneer_bander:     { label: 'Pioneer — Bander Only',                        hourRate:  90, period: 'day'   },
-};
-
-// Resolve hour rate from setup key + customer
-function resolveHourRate(setupKey, cust) {
-  if(!setupKey) return 0;
-  const setup = SETUP_RATES[setupKey];
-  if(!setup) return 0;
-  // Pioneer setups have hourRate hardcoded
-  if(setup.hourRate !== undefined) return setup.hourRate;
-  // Others look up from RATES table
-  const custRates = RATES[cust];
-  if(!custRates) return 0;
-  if(setup.rateKey === 'single') {
-    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('cable tech'));
-    return key ? (custRates[key][setup.period] || 0) : 0;
-  }
-  if(setup.rateKey === 'combo') {
-    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('combo'));
-    return key ? (custRates[key][setup.period] || 0) : 0;
-  }
-  if(setup.rateKey === 'bander') {
-    const key = Object.keys(custRates).find(k => k.toLowerCase().includes('bander'));
-    return key ? (custRates[key][setup.period] || 0) : 0;
-  }
-  return 0;
+async function loadRates() {
+  const res = await api('getRates');
+  if(!res.success) return;
+  STATE.rates   = res.rates   || {};
+  STATE.ctParts = res.ctParts || [];
+  buildJobSetupOptions();
+  buildParts();
 }
 
-function getMileRate(cust) {
-  return MILE_RATES[cust] || 3.00;
-}
+function buildJobSetupOptions() {
+  const cust = document.getElementById('customer').value;
+  const sel  = document.getElementById('job-setup');
+  const sel2 = document.getElementById('t2-setup');
+  sel.innerHTML  = '<option value="">— Select Rate Type —</option>';
+  sel2.innerHTML = '<option value="">— Same as Tech 1 —</option>';
+  if(!cust || !STATE.rates[cust]) return;
 
-// ══════════════════════════════════════════
-// JOB SETUP CHANGED
-// ══════════════════════════════════════════
-function jobSetupChanged() {
-  const setupKey = document.getElementById('job-setup').value;
-  const cust     = document.getElementById('customer').value;
-  const hourRate = resolveHourRate(setupKey, cust);
-  const mileRate = getMileRate(cust);
-
-  const display  = document.getElementById('master-rate-display');
-  const rateVal  = document.getElementById('master-rate-value');
-  const hoursCard= document.getElementById('hours-card');
-  const togRow   = document.getElementById('tech2-toggle-row');
-
-  if(!setupKey || hourRate === 0) {
-    display.style.display   = 'none';
-    hoursCard.style.display = 'none';
-    togRow.style.display    = 'none';
-    return;
-  }
-
-  // Show locked rate
-  display.style.display   = 'block';
-  hoursCard.style.display = 'block';
-  togRow.style.display    = 'flex';
-  rateVal.textContent     = '$' + hourRate.toFixed(2) + ' / hr';
-
-  // Update mile rate displays
-  const t1mr = document.getElementById('t1-mile-rate-display');
-  const t2mr = document.getElementById('t2-mile-rate-display');
-  if(t1mr) t1mr.textContent = '$' + mileRate.toFixed(2) + ' / mi';
-  if(t2mr) t2mr.textContent = '$' + mileRate.toFixed(2) + ' / mi';
-
-  calcAll();
-}
-
-// ══════════════════════════════════════════
-// BUILD JOB SETUP OPTIONS BY CUSTOMER
-// ══════════════════════════════════════════
-function buildJobSetupOptions(cust) {
-  var sel = document.getElementById('job-setup');
-  sel.innerHTML = '<option value="">— Select Job Setup —</option>';
-
-  var options = [];
-
-  if(cust === 'Pioneer') {
-    options = [
-      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
-      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
-      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
-      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
-      { value: 'pioneer_bander',     label: 'Bander Only' },
-    ];
-  } else {
-    options = [
-      { value: 'single_day',   label: 'Cable Tech — Weekday' },
-      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
-      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
-      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
-      { value: 'bander_day',   label: 'Bander Only — Weekday' },
-      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
-    ];
-  }
-
-  options.forEach(function(o) {
-    var opt = document.createElement('option');
-    opt.value = o.value;
-    opt.textContent = o.label;
-    sel.appendChild(opt);
+  const custRates = STATE.rates[cust];
+  const hourItems = Object.keys(custRates).filter(k => custRates[k].uom==='Hour');
+  hourItems.forEach(item => {
+    const r   = custRates[item];
+    const lbl = item + (r.day!==r.night ? ` (Day $${r.day} / Night $${r.night})` : ` $${r.day}/hr`);
+    const opt = new Option(lbl, item);
+    sel.appendChild(opt.cloneNode(true));
+    sel2.appendChild(opt);
   });
-}
-
-// ══════════════════════════════════════════
-// TOGGLE TECH 2
-// ══════════════════════════════════════════
-function toggleTech2() {
-  tech2Active = !tech2Active;
-  document.getElementById('tog-t2').classList.toggle('on', tech2Active);
-  document.getElementById('t2-card').style.display = tech2Active ? 'block' : 'none';
-  if(tech2Active) {
-    // Populate Tech 2 rate dropdown with same options as Tech 1
-    var cust = document.getElementById('customer').value;
-    populateT2Dropdown(cust);
-  }
-  calcAll();
-}
-
-function populateT2Dropdown(cust) {
-  var sel = document.getElementById('t2-job-setup');
-  // Keep the "same as tech 1" option, then add all options
-  sel.innerHTML = '<option value="">— Same as Tech 1 —</option>';
-  var options = [];
-  if(cust === 'Pioneer') {
-    options = [
-      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
-      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
-      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
-      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
-      { value: 'pioneer_bander',     label: 'Bander Only' },
-    ];
-  } else {
-    options = [
-      { value: 'single_day',   label: 'Cable Tech — Weekday' },
-      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
-      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
-      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
-      { value: 'bander_day',   label: 'Bander Only — Weekday' },
-      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
-    ];
-  }
-  options.forEach(function(o) {
-    var opt = document.createElement('option');
-    opt.value = o.value;
-    opt.textContent = o.label;
-    sel.appendChild(opt);
-  });
-}
-
-function tech2SetupChanged() {
-  var setupKey = document.getElementById('t2-job-setup').value;
-  var cust     = document.getElementById('customer').value;
-  var display  = document.getElementById('t2-rate-display');
-  var rateVal  = document.getElementById('t2-rate-value');
-
-  if(!setupKey) {
-    // Revert to same as Tech 1
-    display.style.display = 'none';
-    calcAll();
-    return;
-  }
-
-  var rate = resolveHourRate(setupKey, cust);
-  display.style.display = 'block';
-  rateVal.textContent   = '$' + rate.toFixed(2) + ' / hr';
-  calcAll();
-}
-
-function getTech2HourRate() {
-  var setupKey = document.getElementById('t2-job-setup').value;
-  var cust     = document.getElementById('customer').value;
-  // If no override selected, use Tech 1 rate
-  if(!setupKey) return getHourRate();
-  return resolveHourRate(setupKey, cust);
 }
 
 function customerChanged() {
-  const cust = document.getElementById('customer').value;
-  document.getElementById('hdr-cust').textContent = cust || 'No Customer';
-  // Rebuild job setup options for this customer
-  buildJobSetupOptions(cust);
-  document.getElementById('master-rate-display').style.display = 'none';
-  document.getElementById('hours-card').style.display = 'none';
-  document.getElementById('tech2-toggle-row').style.display = 'none';
-  buildParts(cust);
+  buildJobSetupOptions();
+  buildParts();
+  document.getElementById('hours-section').style.display='block';
+  document.getElementById('parts-section').style.display='block';
+  document.getElementById('totals-section').style.display='block';
+  document.getElementById('rate-badge-div').style.display='none';
+  document.getElementById('hour-slots').style.display='none';
   calcAll();
 }
 
-// ══════════════════════════════════════════
-// BUILD JOB SETUP OPTIONS BY CUSTOMER
-// ══════════════════════════════════════════
-function buildJobSetupOptions(cust) {
-  var sel = document.getElementById('job-setup');
-  sel.innerHTML = '<option value="">— Select Job Setup —</option>';
-
-  var options = [];
-
-  if(cust === 'Pioneer') {
-    options = [
-      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
-      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
-      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
-      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
-      { value: 'pioneer_bander',     label: 'Bander Only' },
-    ];
-  } else {
-    options = [
-      { value: 'single_day',   label: 'Cable Tech — Weekday' },
-      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
-      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
-      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
-      { value: 'bander_day',   label: 'Bander Only — Weekday' },
-      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
-    ];
-  }
-
-  options.forEach(function(o) {
-    var opt = document.createElement('option');
-    opt.value = o.value;
-    opt.textContent = o.label;
-    sel.appendChild(opt);
-  });
-}
-
-// ══════════════════════════════════════════
-// TOGGLE TECH 2
-// ══════════════════════════════════════════
-function toggleTech2() {
-  tech2Active = !tech2Active;
-  document.getElementById('tog-t2').classList.toggle('on', tech2Active);
-  document.getElementById('t2-card').style.display = tech2Active ? 'block' : 'none';
-  if(tech2Active) {
-    // Populate Tech 2 rate dropdown with same options as Tech 1
-    var cust = document.getElementById('customer').value;
-    populateT2Dropdown(cust);
-  }
-  calcAll();
-}
-
-function populateT2Dropdown(cust) {
-  var sel = document.getElementById('t2-job-setup');
-  // Keep the "same as tech 1" option, then add all options
-  sel.innerHTML = '<option value="">— Same as Tech 1 —</option>';
-  var options = [];
-  if(cust === 'Pioneer') {
-    options = [
-      { value: 'pioneer_prod',       label: 'Cable Tech — Production Rig' },
-      { value: 'pioneer_comp',       label: 'Cable Tech — Completion Rig' },
-      { value: 'pioneer_combo_prod', label: 'Combo Trailer — Production Rig' },
-      { value: 'pioneer_combo_comp', label: 'Combo Trailer — Completion Rig' },
-      { value: 'pioneer_bander',     label: 'Bander Only' },
-    ];
-  } else {
-    options = [
-      { value: 'single_day',   label: 'Cable Tech — Weekday' },
-      { value: 'single_night', label: 'Cable Tech — Night / Weekend / Holiday' },
-      { value: 'combo_day',    label: 'Combo Trailer — Weekday' },
-      { value: 'combo_night',  label: 'Combo Trailer — Night / Weekend / Holiday' },
-      { value: 'bander_day',   label: 'Bander Only — Weekday' },
-      { value: 'bander_night', label: 'Bander Only — Night / Weekend / Holiday' },
-    ];
-  }
-  options.forEach(function(o) {
-    var opt = document.createElement('option');
-    opt.value = o.value;
-    opt.textContent = o.label;
-    sel.appendChild(opt);
-  });
-}
-
-function tech2SetupChanged() {
-  var setupKey = document.getElementById('t2-job-setup').value;
-  var cust     = document.getElementById('customer').value;
-  var display  = document.getElementById('t2-rate-display');
-  var rateVal  = document.getElementById('t2-rate-value');
-
-  if(!setupKey) {
-    // Revert to same as Tech 1
-    display.style.display = 'none';
-    calcAll();
+function setupChanged() {
+  const cust    = document.getElementById('customer').value;
+  const setup   = document.getElementById('job-setup').value;
+  if(!setup || !cust || !STATE.rates[cust] || !STATE.rates[cust][setup]) {
+    document.getElementById('rate-badge-div').style.display='none';
+    document.getElementById('hour-slots').style.display='none';
     return;
   }
+  const r   = STATE.rates[cust][setup];
+  const mileItem = Object.keys(STATE.rates[cust]).find(k => STATE.rates[cust][k].uom==='Mile');
+  const mileRate = mileItem ? STATE.rates[cust][mileItem].day : 3.00;
 
-  var rate = resolveHourRate(setupKey, cust);
-  display.style.display = 'block';
-  rateVal.textContent   = '$' + rate.toFixed(2) + ' / hr';
+  document.getElementById('rate-badge-val').textContent = '$'+r.day.toFixed(2)+'/hr';
+  if(r.day!==r.night) document.getElementById('rate-badge-val').textContent += ' Day · $'+r.night.toFixed(2)+'/hr Night';
+  document.getElementById('rate-badge-div').style.display='block';
+  document.getElementById('hour-slots').style.display='block';
+  document.getElementById('mile-rate-lbl').textContent = '$'+mileRate.toFixed(2)+' / mi';
+  document.getElementById('t2-mile-lbl').textContent   = '$'+mileRate.toFixed(2)+' / mi';
+  buildJobSetupOptions();
   calcAll();
 }
 
-function getTech2HourRate() {
-  var setupKey = document.getElementById('t2-job-setup').value;
-  var cust     = document.getElementById('customer').value;
-  // If no override selected, use Tech 1 rate
-  if(!setupKey) return getHourRate();
-  return resolveHourRate(setupKey, cust);
+function t2SetupChanged() {
+  const cust   = document.getElementById('customer').value;
+  const setup  = document.getElementById('t2-setup').value;
+  const badge  = document.getElementById('t2-rate-badge');
+  if(!setup || !cust || !STATE.rates[cust] || !STATE.rates[cust][setup]) {
+    badge.style.display='none'; calcAll(); return;
+  }
+  const r = STATE.rates[cust][setup];
+  document.getElementById('t2-rate-val').textContent = '$'+r.day.toFixed(2)+'/hr';
+  badge.style.display='block';
+  calcAll();
+}
+
+function getHourRate(prefix) {
+  const cust  = document.getElementById('customer').value;
+  const setup = document.getElementById(prefix+'-setup').value;
+  if(!setup || !cust || !STATE.rates[cust] || !STATE.rates[cust][setup]) return 0;
+  return STATE.rates[cust][setup].day || 0;
+}
+
+function getMileRate() {
+  const cust = document.getElementById('customer').value;
+  if(!cust || !STATE.rates[cust]) return 3.00;
+  const mileItem = Object.keys(STATE.rates[cust]).find(k => STATE.rates[cust][k].uom==='Mile');
+  return mileItem ? (STATE.rates[cust][mileItem].day||3.00) : 3.00;
 }
 
 // ══════════════════════════════════════════
 // PARTS
 // ══════════════════════════════════════════
-function buildParts(cust) {
-  ['parts-bs','parts-ct'].forEach(id => document.getElementById(id).innerHTML='');
-  BS_PARTS.forEach((p,i) => addPartRow('parts-bs','bs',i,p.name,p.uom, cust&&p.rates?p.rates[cust]||0:0));
-  CT_PARTS.forEach((p,i) => addPartRow('parts-ct','ct',i,p.name,p.uom, p.rate));
+function buildParts() {
+  const cust   = document.getElementById('customer').value;
+  const custR  = cust && STATE.rates[cust] ? STATE.rates[cust] : {};
+  const bsEl   = document.getElementById('bs-parts');
+  const ctEl   = document.getElementById('ct-parts');
+  bsEl.innerHTML=''; ctEl.innerHTML='';
+
+  // BS parts — non-hour, non-mile items
+  Object.keys(custR).filter(k => custR[k].uom!=='Hour' && custR[k].uom!=='Mile').forEach((item,i) => {
+    const r = custR[item];
+    bsEl.appendChild(makePartRow('bs', i, item, r.uom, r.day));
+  });
+
+  // CT parts
+  STATE.ctParts.forEach((p,i) => {
+    ctEl.appendChild(makePartRow('ct', i, p.name, p.uom, p.rate));
+  });
 }
 
-function addPartRow(containerId, prefix, i, name, uom, rate) {
+function makePartRow(prefix, i, name, uom, rate) {
   const div = document.createElement('div');
-  div.className = 'part-row';
-  div.innerHTML = `
-    <div><div class="part-name">${name}</div><div class="part-uom">${uom} · $${rate.toFixed(2)}</div></div>
+  div.className='part-row';
+  div.innerHTML=`
+    <div><div class="part-name">${name}</div><div class="part-uom">${uom} · $${parseFloat(rate).toFixed(2)}</div></div>
     <input type="number" class="part-qty" id="${prefix}-qty-${i}" min="0" step="1" value="0" inputmode="numeric" oninput="calcAll()">
     <div class="part-total" id="${prefix}-lt-${i}">$0.00</div>`;
-  document.getElementById(containerId).appendChild(div);
+  return div;
 }
 
 // ══════════════════════════════════════════
-// CALC
+// CALCULATIONS
 // ══════════════════════════════════════════
-function gv(id) { return parseFloat(document.getElementById(id)?.value)||0; }
-function fmt(n) { return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+const fmt = n => '$'+parseFloat(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const gv  = id => parseFloat(document.getElementById(id)?.value)||0;
 
-function getHourRate() {
-  const setupKey = document.getElementById('job-setup').value;
-  const cust     = document.getElementById('customer').value;
-  return resolveHourRate(setupKey, cust);
+function toggleT2() {
+  STATE.tech2 = !STATE.tech2;
+  document.getElementById('tog-t2').classList.toggle('on', STATE.tech2);
+  document.getElementById('t2-section').style.display = STATE.tech2?'block':'none';
+  document.getElementById('fin-t2-row').style.display = STATE.tech2?'flex':'none';
+  calcAll();
 }
 
-function calcTech1() {
-  const rate = getHourRate();
-  const mileRate = getMileRate(document.getElementById('customer').value);
-  const slots = ['load','travel','standby','spool'];
-  let hoursTotal = 0;
-
-  slots.forEach(function(s) {
-    const input = document.getElementById('t1-' + s);
-    const hrs   = input ? (parseFloat(input.value) || 0) : 0;
-    hoursTotal += hrs * rate;
-  });
-
-  const miInput  = document.getElementById('t1-miles');
-  const miles    = miInput ? (parseFloat(miInput.value) || 0) : 0;
-  const miTotal  = miles * mileRate;
-
-  const subEl = document.getElementById('t1-hours-sub');
-  if(subEl) subEl.textContent = '$' + hoursTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-
-  const miTotEl = document.getElementById('t1-miles-total');
-  if(miTotEl) miTotEl.textContent = '$' + miTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-
-  return hoursTotal + miTotal;
+function calcTech(prefix) {
+  const r  = getHourRate(prefix==='t1'?'job':'t2');
+  const mr = getMileRate();
+  const hours = ['load','travel','standby','spool'];
+  let total = 0;
+  hours.forEach(s => { total += (gv(`${prefix}-${s}`)||0) * r; });
+  total += (gv(`${prefix}-miles`)||0) * mr;
+  document.getElementById(`${prefix}-sub`).textContent = fmt(total);
+  return total;
 }
 
-function calcTech2() {
-  if(!tech2Active) return 0;
-  const rate = getTech2HourRate();
-  const mileRate = getMileRate(document.getElementById('customer').value);
-  const slots = ['load','travel','standby','spool'];
-  let hoursTotal = 0;
-
-  slots.forEach(function(s) {
-    const input = document.getElementById('t2-' + s);
-    const hrs   = input ? (parseFloat(input.value) || 0) : 0;
-    hoursTotal += hrs * rate;
-  });
-
-  const miInput  = document.getElementById('t2-miles');
-  const miles    = miInput ? (parseFloat(miInput.value) || 0) : 0;
-  const miTotal  = miles * mileRate;
-
-  const subEl = document.getElementById('t2-hours-sub');
-  if(subEl) subEl.textContent = '$' + hoursTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-
-  const miTotEl = document.getElementById('t2-miles-total');
-  if(miTotEl) miTotEl.textContent = '$' + miTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-
-  return hoursTotal + miTotal;
-}
-
-function calcPartsSection(parts, prefix, cust) {
-  var total = 0;
-  parts.forEach(function(p, i) {
-    var rate = cust && p.rates ? (p.rates[cust] || 0) : (p.rate || 0);
-    var input = document.getElementById(prefix + '-qty-' + i);
-    var qty   = input ? (parseFloat(input.value) || 0) : 0;
-    var line  = rate * qty;
-    total += line;
-    var el = document.getElementById(prefix + '-lt-' + i);
-    if(el) el.textContent = line > 0 ? ('$' + line.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')) : '$0.00';
+function calcParts(prefix, items, cust) {
+  let total=0;
+  items.forEach((item,i) => {
+    const qty  = gv(`${prefix}-qty-${i}`);
+    const rate = prefix==='bs' ? (cust&&STATE.rates[cust]?STATE.rates[cust][item]?.day||0:0) : item.rate;
+    const line = qty * (typeof rate==='number'?rate:rate||0);
+    total+=line;
+    const el = document.getElementById(`${prefix}-lt-${i}`);
+    if(el) el.textContent = line>0?fmt(line):'$0.00';
   });
   return total;
 }
 
 function calcAll() {
-  var cust  = document.getElementById('customer').value;
-  var t1    = calcTech1();
-  var t2    = calcTech2();
-  var bs    = calcPartsSection(BS_PARTS, 'bs', cust);
-  var ct    = calcPartsSection(CT_PARTS, 'ct', null);
-  var grand = t1 + t2 + bs + ct;
-  var fmtd  = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  var el    = document.getElementById('sum-grand');
-  if(el) el.textContent = fmtd;
+  const cust   = document.getElementById('customer').value;
+  const custR  = cust&&STATE.rates[cust]?STATE.rates[cust]:{};
+  const bsKeys = Object.keys(custR).filter(k=>custR[k].uom!=='Hour'&&custR[k].uom!=='Mile');
+
+  const t1  = calcTech('t1');
+  const t2  = STATE.tech2 ? calcTech('t2') : 0;
+
+  // BS parts calc
+  let bs=0;
+  bsKeys.forEach((item,i)=>{
+    const qty=gv(`bs-qty-${i}`); const rate=custR[item]?.day||0; const line=qty*rate;
+    bs+=line;
+    const el=document.getElementById(`bs-lt-${i}`); if(el) el.textContent=line>0?fmt(line):'$0.00';
+  });
+
+  // CT parts calc
+  let ct=0;
+  STATE.ctParts.forEach((p,i)=>{
+    const qty=gv(`ct-qty-${i}`); const line=qty*p.rate;
+    ct+=line;
+    const el=document.getElementById(`ct-lt-${i}`); if(el) el.textContent=line>0?fmt(line):'$0.00';
+  });
+
+  const grand=t1+t2+bs+ct;
+  document.getElementById('fin-t1').textContent=fmt(t1);
+  document.getElementById('fin-t2').textContent=fmt(t2);
+  document.getElementById('fin-bs').textContent=fmt(bs);
+  document.getElementById('fin-ct').textContent=fmt(ct);
+  document.getElementById('fin-grand').textContent=fmt(grand);
+  buildCarbonCopy(t1,t2,bs,ct,grand);
 }
 
-// ══════════════════════════════════════════
-// SUMMARY
-// ══════════════════════════════════════════
-function buildSummary() {
+function buildCarbonCopy(t1,t2,bs,ct,grand) {
   const cust = document.getElementById('customer').value;
+  const custR = cust&&STATE.rates[cust]?STATE.rates[cust]:{};
+  const bsKeys = Object.keys(custR).filter(k=>custR[k].uom!=='Hour'&&custR[k].uom!=='Mile');
+  const setup = document.getElementById('job-setup').value;
+  const rate  = setup&&custR[setup]?custR[setup].day:0;
+  const mr    = getMileRate();
+  const slots = ['load','travel','standby','spool'];
+  const slotLabels = {'load':'Load/Unload','travel':'Travel Time','standby':'Standby','spool':'Spooling Labor'};
 
-  // ── Job info cheat sheet ──
-  const g = id => document.getElementById(id)?.value || '—';
-  document.getElementById('cc-cust').textContent     = cust || '—';
-  document.getElementById('cc-loc').textContent      = g('cable-loc');
-  document.getElementById('cc-oil').textContent      = g('oil-co');
-  document.getElementById('cc-lease').textContent    = g('lease-name');
-  document.getElementById('cc-well').textContent     = g('well-num');
-  document.getElementById('cc-inv').textContent      = g('inv-num');
-  document.getElementById('cc-dispatch').textContent = g('dispatch-num');
-  document.getElementById('cc-date').textContent     = g('inv-date');
-  document.getElementById('cc-spooler').textContent  = g('spooler-name');
-  document.getElementById('cc-tech').textContent     = g('tech-name');
-  document.getElementById('cc-jobtype').textContent  = g('job-type');
-  const st = document.getElementById('start-time').value;
-  const sp = document.getElementById('stop-time').value;
-  document.getElementById('cc-times').textContent = (st&&sp)?`${st} – ${sp}`:(st||sp||'—');
+  let rows='';
+  rows+=`<div class="cc-row"><span class="cc-f">Invoice #</span><span class="cc-v">${document.getElementById('inv-num').value||'—'}</span></div>`;
+  rows+=`<div class="cc-row"><span class="cc-f">Cable Company</span><span class="cc-v">${document.getElementById('cable-co').value||'—'}</span></div>`;
+  rows+=`<div class="cc-row"><span class="cc-f">Oil Company</span><span class="cc-v">${cust||'—'}</span></div>`;
+  rows+=`<div class="cc-row"><span class="cc-f">Well #</span><span class="cc-v">${document.getElementById('well-num').value||'—'}</span></div>`;
+  rows+=`<div class="cc-row"><span class="cc-f">Start / Stop</span><span class="cc-v">${document.getElementById('start-time').value||'—'} – ${document.getElementById('stop-time').value||'—'}</span></div>`;
+  rows+='<div class="divider"></div>';
 
-  // ── Carbon copy row renderer ──
-  function ccRow(label, qty, unit, rate, line) {
-    return `<div style="display:grid;grid-template-columns:1fr 70px 80px 90px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--light);">
-      <span style="font-size:13px;font-weight:600;">${label}</span>
-      <span style="text-align:center;font-size:15px;font-weight:700;">${qty} ${unit}</span>
-      <span style="text-align:center;font-size:13px;font-weight:700;color:var(--blue);">${fmt(rate)}</span>
-      <span style="text-align:right;font-size:15px;font-weight:700;color:var(--dark-red);">${fmt(line)}</span>
-    </div>`;
-  }
+  slots.forEach(s=>{
+    const hrs=gv(`t1-${s}`); if(!hrs) return;
+    const line=hrs*rate;
+    rows+=`<div class="cc-row"><span class="cc-f">${slotLabels[s]}</span><span class="cc-v">${hrs}h @ ${fmt(rate)} = ${fmt(line)}</span></div>`;
+  });
+  const mi=gv('t1-miles'); if(mi) rows+=`<div class="cc-row"><span class="cc-f">Mileage</span><span class="cc-v">${mi}mi @ ${fmt(mr)} = ${fmt(mi*mr)}</span></div>`;
 
-  // ── Tech rows builder ──
-  function buildTechRows(prefix, rowsId, totId) {
-    var rate     = getHourRate();
-    var mileRate = getMileRate(cust);
-    var setupKey = document.getElementById('job-setup').value;
-    var setup    = SETUP_RATES[setupKey] || {};
-    var slotMap  = {load:'Load / Unload', travel:'Travel Time', standby:'Standby Time', spool:'Spooling Labor'};
-    var rowHtml  = '';
-    var total    = 0;
-    ['load','travel','standby','spool'].forEach(function(s) {
-      var el  = document.getElementById(prefix + '-' + s);
-      var qty = el ? (parseFloat(el.value) || 0) : 0;
-      if(qty === 0) return;
-      var line = qty * rate;
-      total += line;
-      rowHtml += ccRow(slotMap[s], qty, 'hrs', rate, line);
+  if(STATE.tech2) {
+    rows+='<div class="divider"></div><div class="cc-row"><span class="cc-f" style="color:var(--green);font-weight:700;">── Tech 2 (overflow rows) ──</span></div>';
+    const t2Setup = document.getElementById('t2-setup').value;
+    const t2Rate  = t2Setup&&custR[t2Setup]?custR[t2Setup].day:rate;
+    slots.forEach(s=>{
+      const hrs=gv(`t2-${s}`); if(!hrs) return;
+      rows+=`<div class="cc-row"><span class="cc-f">${slotLabels[s]}</span><span class="cc-v">${hrs}h @ ${fmt(t2Rate)} = ${fmt(hrs*t2Rate)}</span></div>`;
     });
-    var miEl  = document.getElementById(prefix + '-miles');
-    var miles = miEl ? (parseFloat(miEl.value) || 0) : 0;
-    if(miles > 0) {
-      var ml = miles * mileRate;
-      total += ml;
-      rowHtml += ccRow('Spooler Miles', miles, 'mi', mileRate, ml);
-    }
-    if(!rowHtml) rowHtml = '<div class="sum-row"><span class="sl" style="font-style:italic;">No hours or miles entered</span></div>';
-    var subFmt = '$' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    rowHtml += '<div style="display:grid;grid-template-columns:1fr 70px 80px 90px;align-items:center;padding:10px 14px;background:var(--light);"><span style="font-size:13px;font-weight:800;color:var(--text);grid-column:1/4;">Subtotal</span><span style="text-align:right;font-size:16px;font-weight:800;color:var(--dark-red);">' + subFmt + '</span></div>';
-    document.getElementById(rowsId).innerHTML = rowHtml;
-    if(totId) document.getElementById(totId).textContent = subFmt;
-    return total;
+    const m2=gv('t2-miles'); if(m2) rows+=`<div class="cc-row"><span class="cc-f">Tech 2 Miles</span><span class="cc-v">${m2}mi @ ${fmt(mr)} = ${fmt(m2*mr)}</span></div>`;
   }
 
-  // ── Part row renderer ──
-  function partRow(name, qty, rate, line) {
-    return `<div style="display:grid;grid-template-columns:1fr 55px 80px 90px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--light);">
-      <span style="font-size:12px;font-weight:500;line-height:1.3;">${name}</span>
-      <span style="text-align:center;font-size:14px;font-weight:700;">${qty}</span>
-      <span style="text-align:center;font-size:12px;font-weight:700;color:var(--blue);">${fmt(rate)}</span>
-      <span style="text-align:right;font-size:14px;font-weight:700;color:var(--dark-red);">${fmt(line)}</span>
-    </div>`;
-  }
+  if(bs>0) { rows+='<div class="divider"></div>'; rows+=`<div class="cc-row"><span class="cc-f">Banding & Spooling Parts</span><span class="cc-v">${fmt(bs)}</span></div>`; }
+  if(ct>0) rows+=`<div class="cc-row"><span class="cc-f">Cap String Total</span><span class="cc-v">${fmt(ct)}</span></div>`;
 
-  const t1 = buildTechRows('t1', 'cc-t1-rows', null);
+  rows+='<div class="divider"></div>';
+  rows+=`<div class="cc-row" style="background:#FFFDE7;border-radius:8px;padding:10px;"><span class="cc-f" style="font-size:14px;font-weight:700;color:var(--red);">★ TOTAL INVOICE</span><span class="cc-v" style="font-size:20px;color:var(--red);">${fmt(grand)}</span></div>`;
 
-  const hasTech2 = tech2Active;
-  document.getElementById('sum-t2-box').style.display = hasTech2 ? 'block' : 'none';
-  document.getElementById('fin-t2-row').style.display = hasTech2 ? 'flex' : 'none';
-  const t2 = hasTech2 ? buildTechRows('t2', 'cc-t2-rows', 'sum-t2-tot') : 0;
-
-  // ── Banding/Spooling parts ──
-  let bsHtml = '', bsTotal = 0;
-  BS_PARTS.forEach((p,i) => {
-    const qty = gv(`bs-qty-${i}`); if(!qty) return;
-    const rate = cust && p.rates ? (p.rates[cust]||0) : 0;
-    const line = rate * qty;
-    bsTotal += line;
-    bsHtml += partRow(p.name, qty, rate, line);
-  });
-  document.getElementById('cc-bs-rows').innerHTML = bsHtml ||
-    '<div class="sum-row"><span class="sl" style="font-style:italic;">No banding/spooling parts used</span></div>';
-  document.getElementById('sum-bs-tot').textContent = fmt(bsTotal);
-
-  // ── CT parts — itemized list but single total for carbon copy ──
-  let ctHtml = '', ctTotal = 0;
-  CT_PARTS.forEach((p,i) => {
-    const qty = gv(`ct-qty-${i}`); if(!qty) return;
-    const line = p.rate * qty;
-    ctTotal += line;
-    ctHtml += partRow(p.name, qty, p.rate, line);
-  });
-  document.getElementById('cc-ct-rows').innerHTML = ctHtml ||
-    '<div class="sum-row"><span class="sl" style="font-style:italic;">No CT parts used</span></div>';
-  document.getElementById('sum-ct-tot').textContent = fmt(ctTotal);
-
-  // ── Totals ──
-  const grand = t1 + t2 + bsTotal + ctTotal;
-  document.getElementById('fin-t1').textContent = '$' + t1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  document.getElementById('fin-t2').textContent = '$' + t2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  document.getElementById('fin-bs').textContent = '$' + bsTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  document.getElementById('fin-ct').textContent = '$' + ctTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  document.getElementById('fin-grand').textContent = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  document.getElementById('sum-grand').textContent = '$' + grand.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('cc-rows').innerHTML=rows;
 }
 
 // ══════════════════════════════════════════
-// SUBMIT JOB TO GOOGLE SHEET
+// SUBMIT JOB
 // ══════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaL6NUGlNmM5yhLkOn_4hxCYNzc68k0vPJ5m20StZ8olPNtKAuv2nykRO-vax-zTij/exec';
+async function submitJob() {
+  const invNum = document.getElementById('inv-num').value;
+  const cust   = document.getElementById('customer').value;
+  if(!invNum) { showStatus('submit-status','error','⚠️ Enter an Invoice # first.'); return; }
+  if(!cust)   { showStatus('submit-status','error','⚠️ Select an Oil Company first.'); return; }
 
-function submitJob() {
-  var btn    = document.getElementById('submit-btn');
-  var status = document.getElementById('submit-status');
-  var cust   = document.getElementById('customer').value;
+  const btn = document.getElementById('submit-btn');
+  btn.textContent='⏳ Submitting...'; btn.disabled=true;
+  showStatus('submit-status','loading','Submitting job...');
 
-  // Basic validation
-  if(!document.getElementById('inv-num').value) {
-    showStatus('error', '⚠️ Please enter an Invoice # before submitting');
-    return;
-  }
-  if(!cust) {
-    showStatus('error', '⚠️ Please select a Customer before submitting');
-    return;
-  }
+  const custR  = STATE.rates[cust]||{};
+  const bsKeys = Object.keys(custR).filter(k=>custR[k].uom!=='Hour'&&custR[k].uom!=='Mile');
+  const mr     = getMileRate();
 
-  btn.textContent = '⏳ Submitting...';
-  btn.disabled = true;
-
-  // Gather all job data
-  var setupKey  = document.getElementById('job-setup').value;
-  var t2Setup   = document.getElementById('t2-job-setup') ? document.getElementById('t2-job-setup').value : '';
-  var hourRate  = getHourRate();
-  var mileRate  = getMileRate(cust);
-
-  function getHrs(id) { var el=document.getElementById(id); return el?(parseFloat(el.value)||0):0; }
-
-  var t1Load    = getHrs('t1-load');
-  var t1Travel  = getHrs('t1-travel');
-  var t1Standby = getHrs('t1-standby');
-  var t1Spool   = getHrs('t1-spool');
-  var t1Miles   = getHrs('t1-miles');
-  var t1HrsTotal= (t1Load+t1Travel+t1Standby+t1Spool)*hourRate + t1Miles*mileRate;
-
-  var t2Load=0, t2Travel=0, t2Standby=0, t2Spool=0, t2Miles=0, t2HrsTotal=0;
-  if(tech2Active) {
-    var t2Rate = getTech2HourRate();
-    t2Load     = getHrs('t2-load');
-    t2Travel   = getHrs('t2-travel');
-    t2Standby  = getHrs('t2-standby');
-    t2Spool    = getHrs('t2-spool');
-    t2Miles    = getHrs('t2-miles');
-    t2HrsTotal = (t2Load+t2Travel+t2Standby+t2Spool)*t2Rate + t2Miles*mileRate;
-  }
-
-  // Parts totals
-  var bsTotal = 0;
-  BS_PARTS.forEach(function(p,i) {
-    var el=document.getElementById('bs-qty-'+i);
-    var qty=el?(parseFloat(el.value)||0):0;
-    var rate=cust&&p.rates?(p.rates[cust]||0):0;
-    bsTotal += qty*rate;
-  });
-  var ctTotal = 0;
-  CT_PARTS.forEach(function(p,i) {
-    var el=document.getElementById('ct-qty-'+i);
-    var qty=el?(parseFloat(el.value)||0):0;
-    ctTotal += qty*p.rate;
+  // Build BS parts used
+  const bsParts=[];
+  bsKeys.forEach((item,i)=>{
+    const qty=gv(`bs-qty-${i}`); if(!qty) return;
+    const rate=custR[item]?.day||0;
+    bsParts.push({name:item,qty,rate,total:qty*rate});
   });
 
-  var grand = t1HrsTotal + t2HrsTotal + bsTotal + ctTotal;
+  // Build CT parts used
+  const ctParts=[];
+  STATE.ctParts.forEach((p,i)=>{
+    const qty=gv(`ct-qty-${i}`); if(!qty) return;
+    ctParts.push({name:p.name,qty,rate:p.rate,total:qty*p.rate,spoolerPct:p.spoolerPct});
+  });
 
-  var payload = {
-    invoiceNum:    document.getElementById('inv-num').value,
+  const t1Total = calcTech('t1');
+  const t2Total = STATE.tech2 ? calcTech('t2') : 0;
+  const bsTotal = bsParts.reduce((s,p)=>s+p.total,0);
+  const ctTotal = ctParts.reduce((s,p)=>s+p.total,0);
+  const grand   = t1Total+t2Total+bsTotal+ctTotal;
+
+  const payload = {
+    invoiceNum:    invNum,
     date:          document.getElementById('inv-date').value,
-    techName:      document.getElementById('tech-name').value,
-    spoolerName:   document.getElementById('spooler-name').value,
     customer:      cust,
-    oilCompany:    document.getElementById('customer').value,
+    oilCompany:    cust,
     cableCompany:  document.getElementById('cable-co').value,
     leaseName:     document.getElementById('lease-name').value,
     wellNum:       document.getElementById('well-num').value,
     dispatchNum:   document.getElementById('dispatch-num').value,
     cableLocation: document.getElementById('cable-loc').value,
+    spoolerName:   document.getElementById('spooler-name').value,
+    techName:      document.getElementById('tech-name').value,
     startTime:     document.getElementById('start-time').value,
     stopTime:      document.getElementById('stop-time').value,
     jobType:       document.getElementById('job-type').value,
+    jobSetup:      document.getElementById('job-setup').value,
     notes:         document.getElementById('notes').value,
-    jobSetup:      setupKey,
-    hourRate:      hourRate,
-    mileRate:      mileRate,
-    t1Load:        t1Load,
-    t1Travel:      t1Travel,
-    t1Standby:     t1Standby,
-    t1Spool:       t1Spool,
-    t1Miles:       t1Miles,
-    t1HoursTotal:  t1HrsTotal,
-    tech2Active:   tech2Active,
-    t2Setup:       t2Setup,
-    t2Load:        t2Load,
-    t2Travel:      t2Travel,
-    t2Standby:     t2Standby,
-    t2Spool:       t2Spool,
-    t2Miles:       t2Miles,
-    t2HoursTotal:  t2HrsTotal,
+    hourRate:      getHourRate('job'),
+    mileRate:      mr,
+    t1Load:        gv('t1-load'),
+    t1Travel:      gv('t1-travel'),
+    t1Standby:     gv('t1-standby'),
+    t1Spool:       gv('t1-spool'),
+    t1Miles:       gv('t1-miles'),
+    t1HoursTotal:  t1Total,
+    tech2Active:   STATE.tech2,
+    t2Setup:       document.getElementById('t2-setup').value,
+    t2Load:        gv('t2-load'),
+    t2Travel:      gv('t2-travel'),
+    t2Standby:     gv('t2-standby'),
+    t2Spool:       gv('t2-spool'),
+    t2Miles:       gv('t2-miles'),
+    t2HoursTotal:  t2Total,
     bsPartsTotal:  bsTotal,
     ctPartsTotal:  ctTotal,
     grandTotal:    grand,
-    bsParts:       getBSPartsUsed(cust),
-    ctParts:       getCTPartsUsed(),
+    bsParts,
+    ctParts,
   };
 
-  // Use GET with encoded data to avoid CORS issues with Apps Script
-  var encoded = encodeURIComponent(JSON.stringify(payload));
-  var url     = SCRIPT_URL + '?data=' + encoded;
-
-  fetch(url, { method: 'GET', mode: 'no-cors' })
-  .then(function() {
-    showStatus('success', '✅ Job submitted! Check your Google Sheet.');
-    btn.textContent  = '✅ Submitted';
-    btn.style.background = 'var(--green)';
-  })
-  .catch(function(err) {
-    showStatus('error', '❌ No internet connection. Try again.');
-    btn.textContent = '📤 Submit Job to Office';
-    btn.disabled = false;
-  });
+  const res = await api('submitJob', payload);
+  if(res.success) {
+    showStatus('submit-status','success','✅ Job submitted! Row added to Google Sheet.');
+    btn.textContent='✅ Submitted';
+    btn.style.background='var(--green)';
+    loadJobs();
+  } else {
+    showStatus('submit-status','error','❌ '+( res.error||'Submission failed.'));
+    btn.textContent='📤 Submit Job to Office';
+    btn.disabled=false;
+  }
 }
 
-function showStatus(type, msg) {
-  var el = document.getElementById('submit-status');
-  el.style.display = 'block';
-  el.textContent   = msg;
-  el.style.background = type === 'success' ? '#D5F5E3' : '#FADBD8';
-  el.style.color      = type === 'success' ? 'var(--green)' : 'var(--dark-red)';
-  el.style.border     = type === 'success' ? '2px solid #A9DFBF' : '2px solid #F1948A';
-}
-
-function getBSPartsUsed(cust) {
-  var used = [];
-  BS_PARTS.forEach(function(p,i) {
-    var el=document.getElementById('bs-qty-'+i);
-    var qty=el?(parseFloat(el.value)||0):0;
-    if(qty>0) {
-      var rate=cust&&p.rates?(p.rates[cust]||0):0;
-      used.push({ name:p.name, qty:qty, rate:rate, total:qty*rate });
-    }
-  });
-  return used;
-}
-
-function getCTPartsUsed() {
-  var used = [];
-  CT_PARTS.forEach(function(p,i) {
-    var el=document.getElementById('ct-qty-'+i);
-    var qty=el?(parseFloat(el.value)||0):0;
-    if(qty>0) used.push({ name:p.name, qty:qty, rate:p.rate, total:qty*p.rate });
-  });
-  return used;
-}
-
-// ══════════════════════════════════════════
-// GENERATE CT SUBMISSION SHEET
-// ══════════════════════════════════════════
-function generateCTSheet() {
-  var cust     = document.getElementById('customer').value;
-  var invNum   = document.getElementById('inv-num').value || '—';
-  var date     = document.getElementById('inv-date').value || '—';
-  var oilCo    = document.getElementById('oil-co').value || '—';
-  var wellNum  = document.getElementById('well-num').value || '—';
-  var cableCo  = cust || '—';
-
-  // Check if any CT parts used
-  var hasCT = false;
-  CT_PARTS.forEach(function(p,i) {
-    var el = document.getElementById('ct-qty-'+i);
-    if(el && parseFloat(el.value) > 0) hasXT = true;
-    if(el && parseFloat(el.value) > 0) hasCT = true;
-  });
-
-  // Build CT sheet HTML
-  var fmt = function(n) {
-    return '$' + parseFloat(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  };
-
-  var rows = '';
-  var total = 0;
-  CT_PARTS.forEach(function(p,i) {
-    var el  = document.getElementById('ct-qty-'+i);
-    var qty = el ? (parseFloat(el.value)||0) : 0;
-    var amt = qty * p.rate;
-    total  += amt;
-    var bg  = i % 2 === 0 ? '#F4F6F8' : '#FFFFFF';
-    rows += '<tr style="background:'+bg+';">';
-    rows += '<td style="padding:8px 10px;border:1px solid #ddd;font-size:13px;">'+p.name+'</td>';
-    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;">'+p.uom+'</td>';
-    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;font-weight:600;">'+fmt(p.rate)+'</td>';
-    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:13px;">'+(qty > 0 ? qty : '')+'</td>';
-    rows += '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:13px;font-weight:700;color:'+(amt>0?'#8B0000':'#999')+';">'+(amt>0?fmt(amt):'$0.00')+'</td>';
-    rows += '</tr>';
-  });
-
-  var ctHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
-  ctHTML += '<title>CT Submission - Invoice '+invNum+'</title>';
-  ctHTML += '<style>';
-  ctHTML += 'body{font-family:Arial,sans-serif;margin:30px;color:#1C2833;font-size:13px;}';
-  ctHTML += 'table{border-collapse:collapse;width:100%;}';
-  ctHTML += 'th{background:#1B3A6B;color:white;padding:9px 10px;text-align:left;font-size:12px;letter-spacing:0.5px;}';
-  ctHTML += 'th.right{text-align:right;} th.center{text-align:center;}';
-  ctHTML += '.info-table td{padding:6px 10px;border:1px solid #ddd;}';
-  ctHTML += '.info-table td.label{font-weight:bold;color:#555;background:#F4F6F8;width:160px;}';
-  ctHTML += '@media print{button{display:none!important;}}';
-  ctHTML += '</style></head><body>';
-
-  // Logo / Header
-  ctHTML += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">';
-  ctHTML += '<div>';
-  ctHTML += '<div style="font-size:22px;font-weight:900;color:#8B0000;letter-spacing:2px;">MAVERICK SPOOLING SERVICES & SERVICES</div>';
-  ctHTML += '<div style="font-size:12px;color:#777;margin-top:2px;">P.O. Box 10383 · Midland, Texas 79702</div>';
-  ctHTML += '<div style="font-size:12px;color:#777;">432-689-0426 Office · 325-573-4760 Fax</div>';
-  ctHTML += '</div>';
-  ctHTML += '<div style="text-align:right;">';
-  ctHTML += '<div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:1px;">CT Misc Parts Submission</div>';
-  ctHTML += '<div style="font-size:28px;font-weight:900;color:#1B3A6B;letter-spacing:1px;">'+invNum+'</div>';
-  ctHTML += '</div></div>';
-
-  ctHTML += '<div style="height:2px;background:#8B0000;margin-bottom:16px;"></div>';
-
-  // Job info
-  ctHTML += '<table class="info-table" style="margin-bottom:20px;">';
-  ctHTML += '<tr><td class="label">Cable Company</td><td>'+cableCo+'</td>';
-  ctHTML += '<td class="label">Invoice #</td><td>'+invNum+'</td></tr>';
-  ctHTML += '<tr><td class="label">Oil Company</td><td>'+oilCo+'</td>';
-  ctHTML += '<td class="label">Date</td><td>'+date+'</td></tr>';
-  ctHTML += '<tr><td class="label">Well Number</td><td>'+wellNum+'</td>';
-  ctHTML += '<td class="label">Location</td><td>'+(document.getElementById('cable-loc').value||'—')+'</td></tr>';
-  ctHTML += '</table>';
-
-  // Parts table
-  ctHTML += '<table>';
-  ctHTML += '<thead><tr>';
-  ctHTML += '<th>Miscellaneous CT Parts — All Customers</th>';
-  ctHTML += '<th class="center" style="width:100px;">UOM</th>';
-  ctHTML += '<th class="center" style="width:100px;">Customer Rate</th>';
-  ctHTML += '<th class="center" style="width:80px;">Quantity</th>';
-  ctHTML += '<th class="right" style="width:110px;">Amount Due</th>';
-  ctHTML += '</tr></thead><tbody>';
-  ctHTML += rows;
-  ctHTML += '</tbody></table>';
-
-  // Total row
-  ctHTML += '<table style="margin-top:0;">';
-  ctHTML += '<tr style="background:#8B0000;">';
-  ctHTML += '<td colspan="4" style="padding:12px 10px;color:white;font-weight:bold;font-size:15px;letter-spacing:1px;border:1px solid #8B0000;">TOTAL AMOUNT</td>';
-  ctHTML += '<td style="padding:12px 10px;text-align:right;color:white;font-weight:900;font-size:18px;border:1px solid #8B0000;">'+fmt(total)+'</td>';
-  ctHTML += '</tr></table>';
-
-  // Print button + note
-  ctHTML += '<div style="margin-top:20px;padding:12px;background:#FFFDE7;border:1px solid #F0D060;border-radius:6px;font-size:12px;color:#555;">';
-  ctHTML += '⚠️ This sheet is auto-generated from the Maverick Field Billing Tool. Submit this document to billing along with the signed carbon copy invoice.';
-  ctHTML += '</div>';
-  ctHTML += '<div style="margin-top:14px;text-align:center;">';
-  ctHTML += '<button onclick="window.print()" style="padding:12px 30px;background:#1B3A6B;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-right:10px;">🖨 Print / Save as PDF</button>';
-  ctHTML += '<button onclick="window.close()" style="padding:12px 30px;background:#ECF0F1;color:#555;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✕ Close</button>';
-  ctHTML += '</div>';
-  ctHTML += '</body></html>';
-
-  // Open in new window
-  var win = window.open('', '_blank', 'width=850,height=900');
-  win.document.write(ctHTML);
-  win.document.close();
-}
-
-// ══════════════════════════════════════════
-// RESET
-// ══════════════════════════════════════════
-function resetAll() {
-  if(!confirm('Start a new job? All current data will be cleared.')) return;
-  document.querySelectorAll('input').forEach(el=>el.value=el.type==='number'?0:'');
+function resetJob() {
+  if(!confirm('Start new job? Current data will be cleared.')) return;
+  document.querySelectorAll('input[type="number"]').forEach(el=>el.value=0);
+  document.querySelectorAll('input[type="text"], input[type="time"]').forEach(el=>el.value='');
   document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
-  document.querySelectorAll('textarea').forEach(el=>el.value='');
-  tech2Active=false;
+  document.getElementById('notes').value='';
+  document.getElementById('inv-date').valueAsDate=new Date();
+  STATE.tech2=false;
   document.getElementById('tog-t2').classList.remove('on');
-  document.getElementById('t2-card').style.display='none';
-  document.getElementById('hdr-cust').textContent='No Customer';
-  document.getElementById('hdr-inv').textContent='No Invoice #';
-  buildParts('Standard');
-  document.getElementById('job-setup').value = '';
-  document.getElementById('master-rate-display').style.display = 'none';
-  document.getElementById('hours-card').style.display = 'none';
-  document.getElementById('tech2-toggle-row').style.display = 'none';
-  goTo(0);
+  document.getElementById('t2-section').style.display='none';
+  document.getElementById('fin-t2-row').style.display='none';
+  document.getElementById('rate-badge-div').style.display='none';
+  document.getElementById('hour-slots').style.display='none';
+  document.getElementById('hours-section').style.display='none';
+  document.getElementById('parts-section').style.display='none';
+  document.getElementById('totals-section').style.display='none';
+  const btn=document.getElementById('submit-btn');
+  btn.textContent='📤 Submit Job to Office';
+  btn.disabled=false;
+  btn.style.background='var(--blue)';
+  document.getElementById('submit-status').className='status';
+  if(!STATE.user.isOwner) document.getElementById('spooler-name').value=STATE.user.name;
 }
 
-// PASSWORD
-var PASSWORD = 'GWField26';
+function updateHeader() {
+  // Update visible job info if needed
+}
 
-function checkPassword() {
-  var input = document.getElementById('pw-input').value;
-  if(input === PASSWORD) {
-    document.getElementById('lock-screen').style.display = 'none';
-    sessionStorage.setItem('gw-field-auth', 'yes');
+// ══════════════════════════════════════════
+// TIMESHEET
+// ══════════════════════════════════════════
+function startClock() {
+  setInterval(()=>{
+    const now=new Date();
+    document.getElementById('clock-time').textContent=now.toLocaleTimeString();
+    document.getElementById('clock-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  },1000);
+}
+
+async function doClock(type) {
+  showStatus('clock-status-msg','loading',type==='in'?'⏳ Clocking in...':'⏳ Clocking out...');
+  const res = await api(type==='in'?'clockIn':'clockOut', {
+    invoiceNum: document.getElementById('ts-invoice').value,
+    entryId:    STATE.clockEntry,
+  });
+
+  if(res.success) {
+    if(type==='in') {
+      STATE.clockEntry=res.entryId;
+      document.getElementById('clock-status').textContent='● Clocked In — '+res.clockIn;
+      document.getElementById('clock-status').className='clock-status in';
+      document.getElementById('clock-in-btn').style.display='none';
+      document.getElementById('clock-out-btn').style.display='block';
+      showStatus('clock-status-msg','success','✅ Clocked in at '+res.clockIn);
+    } else {
+      document.getElementById('clock-status').textContent='● Not Clocked In';
+      document.getElementById('clock-status').className='clock-status out';
+      document.getElementById('clock-in-btn').style.display='block';
+      document.getElementById('clock-out-btn').style.display='none';
+      showStatus('clock-status-msg','success','✅ Clocked out. Hours: '+res.hoursWorked);
+      STATE.clockEntry=null;
+      loadTimesheet();
+    }
   } else {
-    document.getElementById('pw-error').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
+    showStatus('clock-status-msg','error','❌ '+(res.error||'Error.'));
   }
 }
 
-// INIT
-window.addEventListener('load', function() {
-  // Check auth
-  if(sessionStorage.getItem('gw-field-auth') === 'yes') {
-    document.getElementById('lock-screen').style.display = 'none';
-  } else {
-    document.getElementById('pw-input').focus();
-  }
-  document.getElementById('inv-date').valueAsDate = new Date();
-  buildParts('Standard');
-  prefillFromURL();
+async function loadTimesheet() {
+  const res=await api('getTimesheet');
+  const el=document.getElementById('ts-entries');
+  if(!res.success||!res.entries.length) { el.innerHTML='<div class="empty">No time entries this period.</div>'; return; }
+  el.innerHTML=res.entries.map(e=>`
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--light);font-size:13px;">
+      <div><div style="font-weight:600;">${e.date}</div><div style="color:var(--muted);">${e.clockIn||'—'} → ${e.clockOut||'In progress'}</div></div>
+      <div style="font-weight:800;font-size:16px;color:var(--blue);">${e.hours||0}h</div>
+    </div>`).join('');
+  document.getElementById('ts-total-hours').textContent=res.totalHours;
+}
+
+// ══════════════════════════════════════════
+// ROUTE & LOCATION
+// ══════════════════════════════════════════
+document.getElementById('start-point').addEventListener('change',function(){
+  document.getElementById('custom-start-div').style.display=this.value==='custom'?'block':'none';
 });
+document.getElementById('rt-cable-shop').addEventListener('change',checkMapBtn);
 
-// Pre-fill job fields from URL params so dispatcher can send a link to tech
-// Example URL: file.html?inv=306325&dispatch=44355000&oil=Pioneer&lease=Robb+Stone&well=2H
-function prefillFromURL() {
-  var params = new URLSearchParams(window.location.search);
-  var set = function(id, val) {
-    var el = document.getElementById(id);
-    if(el && val) el.value = val;
+function checkMapBtn() {
+  const shop=document.getElementById('rt-cable-shop').value;
+  const show=shop&&shop!=='custom_shop'&&STATE.jobCoords;
+  document.getElementById('open-maps-btn').style.display=show?'block':'none';
+  document.getElementById('screenshot-card').style.display=show?'block':'none';
+}
+
+function showPaste() {
+  const d=document.getElementById('paste-div');
+  d.style.display=d.style.display==='none'?'block':'none';
+}
+
+function getGPS() {
+  if(!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    STATE.jobCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    showRtCoords(STATE.jobCoords.lat,STATE.jobCoords.lng,'Current Location');
+    document.getElementById('save-well-div').style.display='block';
+    checkMapBtn();
+  },()=>alert('Could not get location. Check location permissions.'),{enableHighAccuracy:true,timeout:10000});
+}
+
+function extractCoords() {
+  const link=document.getElementById('maps-paste').value;
+  const patterns=[/@(-?\d+\.\d+),(-?\d+\.\d+)/,/\?q=(-?\d+\.\d+),(-?\d+\.\d+)/,/ll=(-?\d+\.\d+),(-?\d+\.\d+)/];
+  for(const p of patterns) {
+    const m=link.match(p);
+    if(m) {
+      STATE.jobCoords={lat:parseFloat(m[1]),lng:parseFloat(m[2])};
+      showRtCoords(STATE.jobCoords.lat,STATE.jobCoords.lng,'From Maps Link');
+      document.getElementById('save-well-div').style.display='block';
+      checkMapBtn(); return;
+    }
+  }
+}
+
+function useManualCoords() {
+  const lat=parseFloat(document.getElementById('rt-lat').value);
+  const lng=parseFloat(document.getElementById('rt-lng').value);
+  if(isNaN(lat)||isNaN(lng)) { alert('Enter valid coordinates.'); return; }
+  STATE.jobCoords={lat,lng};
+  showRtCoords(lat,lng,'Manual Entry');
+  document.getElementById('save-well-div').style.display='block';
+  checkMapBtn();
+}
+
+function showRtCoords(lat,lng,src) {
+  document.getElementById('rt-coord-val').textContent=lat.toFixed(6)+', '+lng.toFixed(6)+' ('+src+')';
+  document.getElementById('rt-coord-display').style.display='block';
+}
+
+async function saveWell() {
+  const name=document.getElementById('new-well-name').value.trim();
+  if(!name) { alert('Enter a well name.'); return; }
+  const res=await api('saveWell',{
+    name, lease:document.getElementById('new-well-lease').value,
+    customer:document.getElementById('new-well-cust').value,
+    lat:STATE.jobCoords?.lat, lng:STATE.jobCoords?.lng,
+    date:new Date().toLocaleDateString(),
+  });
+  if(res.success) {
+    STATE.wells.push({name,lat:STATE.jobCoords?.lat,lng:STATE.jobCoords?.lng});
+    document.getElementById('save-well-div').style.display='none';
+    alert('✅ '+name+' saved!');
+    renderWells();
+  }
+}
+
+function openMaps() {
+  const start=document.getElementById('start-point').value==='custom'?document.getElementById('custom-start-addr').value:document.getElementById('start-point').value;
+  const shop=document.getElementById('rt-cable-shop').value;
+  const url=`https://www.google.com/maps/dir/${encodeURIComponent(start)}/${encodeURIComponent(shop)}/${STATE.jobCoords.lat},${STATE.jobCoords.lng}/${encodeURIComponent(shop)}`;
+  window.open(url,'_blank');
+}
+
+function searchWellsRT() {
+  const q=document.getElementById('rt-well-search').value.toLowerCase();
+  const el=document.getElementById('rt-well-results');
+  if(!q) { el.innerHTML=''; return; }
+  const matches=STATE.wells.filter(w=>(w.name||'').toLowerCase().includes(q)||(w.lease||'').toLowerCase().includes(q));
+  el.innerHTML=matches.slice(0,5).map(w=>`
+    <div class="search-result" style="background:#fff;border:2px solid var(--border);border-radius:10px;padding:12px;margin-bottom:6px;cursor:pointer;" onclick="selectWell(${JSON.stringify(w).replace(/"/g,"'")})">
+      <div style="font-weight:700;">📍 ${w.name}</div>
+      <div style="font-size:12px;color:var(--muted);">${w.lease||''} · ${w.customer||''}</div>
+    </div>`).join('');
+}
+
+function selectWell(well) {
+  STATE.jobCoords={lat:parseFloat(well.lat),lng:parseFloat(well.lng)};
+  STATE.selectedWell=well;
+  document.getElementById('rt-well-search').value=well.name;
+  document.getElementById('rt-well-results').innerHTML='';
+  showRtCoords(STATE.jobCoords.lat,STATE.jobCoords.lng,well.name);
+  document.getElementById('save-well-div').style.display='none';
+  checkMapBtn();
+}
+
+async function loadWells() {
+  const res=await api('getWells');
+  if(res.success) { STATE.wells=res.wells||[]; renderWells(); }
+}
+
+function renderWells() {
+  const q=document.getElementById('well-search').value.toLowerCase();
+  const filtered=q?STATE.wells.filter(w=>(w.name||'').toLowerCase().includes(q)||(w.customer||'').toLowerCase().includes(q)):STATE.wells;
+  const el=document.getElementById('well-list');
+  if(!filtered.length) { el.innerHTML='<div class="empty">No wells saved yet.</div>'; return; }
+  el.innerHTML=filtered.map(w=>`
+    <div class="well-card">
+      <div class="well-name">📍 ${w.name}</div>
+      <div class="well-meta">${w.lease||''} · ${w.customer||''}</div>
+      <div class="well-meta">Coords: ${w.lat}, ${w.lng}</div>
+      <div class="well-meta">Last worked: ${w.date||'—'} · Jobs: ${w.jobs||0}</div>
+      <div style="margin-top:8px;">
+        <button class="btn-sm" style="background:var(--blue);color:#fff;" onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Maps</button>
+        ${STATE.user?.isOwner?`<button class="btn-sm" style="background:var(--orange);color:#fff;" onclick="editWell('${w.name}')">✏️ Edit</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+async function editWell(oldName) {
+  const well=STATE.wells.find(w=>w.name===oldName);
+  const newName=prompt('Well name:',well.name); if(!newName) return;
+  const newLat=prompt('Latitude:',well.lat);
+  const newLng=prompt('Longitude:',well.lng);
+  const res=await api('editWell',{oldName,name:newName,lat:newLat,lng:newLng,lease:well.lease,customer:well.customer});
+  if(res.success) { await loadWells(); alert('✅ Updated.'); }
+}
+
+// Photo handlers
+function handleRtPhoto(e) { readPhoto(e.target.files[0], 'rt'); }
+function handleDetailPhoto(e) { readPhoto(e.target.files[0], 'detail'); }
+
+function readPhoto(file, prefix) {
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    if(prefix==='rt') { STATE.rtPhotoB64=b64; showPhotoPreview('rt-photo-preview','rt-photo-box',e.target.result); }
+    else { STATE.detailPhotoB64=b64; showPhotoPreview('detail-photo-preview','detail-photo-box',e.target.result); }
   };
-  set('inv-num',     params.get('inv'));
-  set('dispatch-num',params.get('dispatch'));
-  set('inv-date',    params.get('date'));
-  set('cable-co',    params.get('cable'));
-  set('well-num',    params.get('well'));
-  set('lease-name',  params.get('lease'));
-  set('cable-loc',   params.get('loc'));
-  set('spooler-name',params.get('spooler'));
-  set('tech-name',   params.get('tech'));
-  set('notes',       params.get('notes'));
+  reader.readAsDataURL(file);
+}
 
-  // Oil company / customer dropdown
-  var oil = params.get('oil');
-  if(oil) {
-    var sel = document.getElementById('customer');
-    for(var i=0; i<sel.options.length; i++) {
-      if(sel.options[i].value === oil) {
-        sel.selectedIndex = i;
-        customerChanged();
-        break;
+function showPhotoPreview(previewId, boxId, src) {
+  document.getElementById(previewId).src=src;
+  document.getElementById(previewId).style.display='block';
+  document.getElementById(boxId).classList.add('has-photo');
+}
+
+async function pastePhoto(prefix) {
+  try {
+    const items=await navigator.clipboard.read();
+    for(const item of items) {
+      for(const type of item.types) {
+        if(type.startsWith('image/')) {
+          const blob=await item.getType(type);
+          const reader=new FileReader();
+          reader.onload=e=>{ const b64=e.target.result.split(',')[1];
+            if(prefix==='rt'){STATE.rtPhotoB64=b64;showPhotoPreview('rt-photo-preview','rt-photo-box',e.target.result);}
+            else{STATE.detailPhotoB64=b64;showPhotoPreview('detail-photo-preview','detail-photo-box',e.target.result);}
+          };
+          reader.readAsDataURL(blob); return;
+        }
       }
     }
+    alert('No image in clipboard.');
+  } catch(e) { alert('Paste not supported. Use the upload button.'); }
+}
+
+async function uploadRtPhoto() {
+  if(!STATE.rtPhotoB64) { alert('Select a screenshot first.'); return; }
+  showStatus('rt-status','loading','⏳ Uploading...');
+  const res=await api('uploadPhoto',{
+    photoB64:STATE.rtPhotoB64, photoType:'route',
+    invoiceNum:document.getElementById('rt-invoice').value,
+    wellName:STATE.selectedWell?.name||'',
+  });
+  if(res.success) showStatus('rt-status','success','✅ Route screenshot saved to Drive!');
+  else showStatus('rt-status','error','❌ '+(res.error||'Upload failed.'));
+}
+
+async function uploadDetailPhoto() {
+  if(!STATE.detailPhotoB64) { alert('Select a photo first.'); return; }
+  if(!STATE.selectedJob) { alert('Select a job first.'); return; }
+  showStatus('detail-photo-status','loading','⏳ Uploading...');
+  const res=await api('uploadPhoto',{
+    photoB64:STATE.detailPhotoB64,
+    photoType:document.getElementById('detail-photo-type').value,
+    invoiceNum:STATE.selectedJob.invoiceNum,
+    wellName:STATE.selectedJob.leaseName||STATE.selectedJob.wellNum||'',
+  });
+  if(res.success) showStatus('detail-photo-status','success','✅ Photo saved!');
+  else showStatus('detail-photo-status','error','❌ '+(res.error||'Upload failed.'));
+}
+
+// ══════════════════════════════════════════
+// MY JOBS
+// ══════════════════════════════════════════
+async function loadJobs() {
+  const res=await api('getMyJobs');
+  if(res.success) { STATE.jobs=res.jobs||[]; filterJobs(); }
+}
+
+function filterJobs() {
+  const q=document.getElementById('job-search').value.toLowerCase();
+  const filtered=q?STATE.jobs.filter(j=>(j.invoiceNum||'').includes(q)||(j.customer||'').toLowerCase().includes(q)||(j.leaseName||'').toLowerCase().includes(q)||(j.wellNum||'').toLowerCase().includes(q)):STATE.jobs;
+  const el=document.getElementById('job-list');
+  if(!filtered.length) { el.innerHTML='<div class="empty">No jobs found.</div>'; return; }
+  el.innerHTML=filtered.slice(0,20).map(j=>`
+    <div class="job-card" onclick="showJobDetail(${JSON.stringify(j).replace(/"/g,"'")})">
+      <div class="job-inv">Invoice #${j.invoiceNum||'—'}</div>
+      <div class="job-meta">${j.date||''} · ${j.customer||''} · ${j.leaseName||''} ${j.wellNum||''}</div>
+      <div class="job-total">${fmt(j.grandTotal)}</div>
+    </div>`).join('');
+}
+
+function showJobDetail(job) {
+  STATE.selectedJob=job;
+  document.getElementById('job-detail').style.display='block';
+  document.getElementById('detail-title').textContent='Invoice #'+(job.invoiceNum||'—');
+  document.getElementById('detail-info').innerHTML=`
+    <div class="sum-row"><span class="sl">Date</span><span class="sv">${job.date||'—'}</span></div>
+    <div class="sum-row"><span class="sl">Customer</span><span class="sv">${job.customer||'—'}</span></div>
+    <div class="sum-row"><span class="sl">Well / Lease</span><span class="sv">${job.wellNum||'—'} · ${job.leaseName||'—'}</span></div>
+    <div class="sum-row hl"><span class="sl">Total Invoice</span><span class="sv">${fmt(job.grandTotal)}</span></div>`;
+  document.getElementById('job-detail').scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════
+// EARNINGS
+// ══════════════════════════════════════════
+async function loadEarnings() {
+  const res=await api('getMyEarnings');
+  const el=document.getElementById('earnings-content');
+  if(!res.success) { el.innerHTML='<div class="notice red">❌ '+(res.error||'Could not load earnings.')+'</div>'; return; }
+
+  let html=`
+    <div class="pay-total-box">
+      <div class="pay-total-label">💵 Your Pay This Period</div>
+      <div class="pay-total-amount">${fmt(res.totalPay)}</div>
+      <div style="font-size:12px;color:var(--green);margin-top:4px;">Pay Period: ${res.period}</div>
+    </div>
+    <div class="pay-breakdown">
+      <div class="pay-hdr">Pay Breakdown</div>
+      <div class="pay-row"><span class="pay-label">Hours Worked</span><span class="pay-value">${res.totalHours} hrs</span></div>
+      <div class="pay-row"><span class="pay-label">Guaranteed Min</span><span class="pay-value">${res.guaranteedHours} hrs</span></div>
+      <div class="pay-row"><span class="pay-label">Regular Hours (${res.regularHours}h @ ${fmt(res.hourRate)}/hr)</span><span class="pay-value">${fmt(res.regularHours*res.hourRate)}</span></div>`;
+
+  if(res.otHours>0) html+=`<div class="pay-row"><span class="pay-label">Overtime (${res.otHours}h @ ${fmt(res.otRate)}/hr)</span><span class="pay-value">${fmt(res.otHours*res.otRate)}</span></div>`;
+  html+=`<div class="pay-row"><span class="pay-label">Base Pay</span><span class="pay-value">${fmt(res.basePay)}</span></div>`;
+  if(res.monelBonus>0) html+=`<div class="pay-row"><span class="pay-label">🎯 Monel Band Bonus</span><span class="pay-value" style="color:var(--green);">+${fmt(res.monelBonus)}</span></div>`;
+  if(res.adjustments?.length) {
+    res.adjustments.forEach(a=>{
+      html+=`<div class="pay-row"><span class="pay-label">${a.type==='deduction'?'➖':'➕'} ${a.desc}</span><span class="pay-value" style="color:${a.type==='deduction'?'var(--red)':'var(--green)'};">${a.type==='deduction'?'-':'+'}${fmt(Math.abs(a.amount))}</span></div>`;
+    });
+  }
+  html+=`<div class="pay-row hl" style="font-size:16px;"><span class="pay-label" style="font-weight:700;color:var(--text);">TOTAL PAY</span><span class="pay-value" style="font-size:20px;color:var(--green);">${fmt(res.totalPay)}</span></div>`;
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD (OWNER)
+// ══════════════════════════════════════════
+async function loadDashboard() {
+  const res=await api('getDashboard');
+  const el=document.getElementById('dashboard-content');
+  if(!res.success) { el.innerHTML='<div class="notice red">❌ '+(res.error||'Could not load.')+'</div>'; return; }
+  const m=res.metrics;
+
+  let html=`
+    <div class="metric-grid">
+      <div class="metric-card"><div class="ml">Today</div><div class="mv">${fmt(m.today.maverick)}</div><div class="ms">${m.today.jobs} jobs · ${fmt(m.today.billed)} billed</div></div>
+      <div class="metric-card blue"><div class="ml">This Week</div><div class="mv">${fmt(m.thisWeek.maverick)}</div><div class="ms">${m.thisWeek.jobs} jobs</div></div>
+      <div class="metric-card green"><div class="ml">This Month</div><div class="mv">${fmt(m.thisMonth.maverick)}</div><div class="ms">${m.thisMonth.jobs} jobs</div></div>
+      <div class="metric-card"><div class="ml">Year to Date</div><div class="mv">${fmt(m.ytd.maverick)}</div><div class="ms">${m.ytd.jobs} jobs</div></div>
+    </div>`;
+
+  // By customer
+  if(Object.keys(m.byCustomer).length) {
+    html+='<div class="card"><div class="card-title">By Customer</div>';
+    Object.entries(m.byCustomer).sort((a,b)=>b[1].maverick-a[1].maverick).forEach(([cust,data])=>{
+      html+=`<div class="sum-row"><span class="sl">${cust} (${data.jobs} jobs)</span><span class="sv">${fmt(data.maverick)}</span></div>`;
+    });
+    html+='</div>';
   }
 
-  // Update header if invoice number pre-filled
-  if(params.get('inv')) {
-    document.getElementById('hdr-inv').textContent = params.get('inv');
+  // By tech
+  if(Object.keys(m.byTech).length) {
+    html+='<div class="card"><div class="card-title">By Tech</div>';
+    Object.entries(m.byTech).forEach(([tech,data])=>{
+      html+=`<div class="sum-row"><span class="sl">${tech} · ${data.jobs} jobs · Monel: ${fmt(data.monelBonus)}</span><span class="sv">${fmt(data.maverick)}</span></div>`;
+    });
+    html+='</div>';
   }
 
-  // Show pre-fill notice if any params present
-  if(params.toString()) {
-    var notice = document.createElement('div');
-    notice.style.cssText = 'background:#D5F5E3;border:2px solid #A9DFBF;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:600;color:var(--green);';
-    notice.textContent = '✅ Job pre-filled by dispatcher. Review and complete hours + parts.';
-    var card = document.querySelector('#screen-0 .card');
-    if(card) card.insertBefore(notice, card.firstChild);
+  // Recent jobs
+  if(m.recentJobs?.length) {
+    html+='<div class="card"><div class="card-title">Recent Jobs</div>';
+    m.recentJobs.forEach(j=>{
+      html+=`<div class="sum-row"><span class="sl">#${j.invoiceNum} · ${j.date} · ${j.customer}</span><span class="sv">${fmt(j.maverick)}</span></div>`;
+    });
+    html+='</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+// ══════════════════════════════════════════
+// PAYROLL (OWNER)
+// ══════════════════════════════════════════
+async function loadPayroll() {
+  showStatus('adj-status','loading','⏳ Loading payroll...');
+  const res=await api('getPayroll');
+  const el=document.getElementById('payroll-content');
+  if(!res.success) { el.innerHTML='<div class="notice red">❌ '+(res.error||'Failed.')+'</div>'; return; }
+
+  let html='';
+  res.payroll.forEach(emp=>{
+    html+=`
+      <div class="card">
+        <div class="card-title">${emp.name} — ${emp.period}</div>
+        <div class="sum-row"><span class="sl">Hours Worked</span><span class="sv">${emp.totalHours} hrs</span></div>
+        <div class="sum-row"><span class="sl">Regular (${emp.regularHours}h @ $${emp.hourRate}/hr)</span><span class="sv">${fmt(emp.regularHours*emp.hourRate)}</span></div>
+        ${emp.otHours>0?`<div class="sum-row"><span class="sl">OT (${emp.otHours}h @ $${emp.otRate}/hr)</span><span class="sv">${fmt(emp.otHours*emp.otRate)}</span></div>`:''}
+        <div class="sum-row"><span class="sl">Monel Bonus</span><span class="sv" style="color:var(--green);">+${fmt(emp.monelBonus)}</span></div>
+        ${emp.adjustments.map(a=>`<div class="sum-row"><span class="sl">${a.type==='deduction'?'➖':'➕'} ${a.desc}</span><span class="sv" style="color:${a.type==='deduction'?'var(--red)':'var(--green)'};">${a.type==='deduction'?'-':'+'}${fmt(Math.abs(a.amount))}</span></div>`).join('')}
+        <div class="sum-row hl"><span class="sl" style="font-size:15px;">TOTAL PAY</span><span class="sv" style="font-size:20px;color:var(--green);">${fmt(emp.totalPay)}</span></div>
+      </div>`;
+  });
+  el.innerHTML=html;
+  document.getElementById('adj-status').className='status';
+
+  // Add send payroll button
+  html+='<button class="btn btn-green" onclick="sendPayroll()">📧 Email Payroll to Techs</button>';
+  el.innerHTML=html;
+}
+
+async function sendPayroll() {
+  showStatus('adj-status','loading','⏳ Sending payroll emails...');
+  const res=await api('sendPayroll');
+  if(res.success) showStatus('adj-status','success','✅ Payroll emails sent!');
+  else showStatus('adj-status','error','❌ '+(res.error||'Failed. Make sure employee emails are set.'));
+}
+
+async function addAdjustment() {
+  const techId=document.getElementById('adj-emp').value;
+  const type=document.getElementById('adj-type').value;
+  const desc=document.getElementById('adj-desc').value;
+  const amount=document.getElementById('adj-amount').value;
+  if(!techId||!desc||!amount) { showStatus('adj-status','error','Fill in all fields.'); return; }
+  showStatus('adj-status','loading','⏳ Adding...');
+  const res=await api('addAdjustment',{techId,type,description:desc,amount:parseFloat(amount)});
+  if(res.success) { showStatus('adj-status','success','✅ Adjustment added!'); document.getElementById('adj-desc').value=''; document.getElementById('adj-amount').value=''; }
+  else showStatus('adj-status','error','❌ '+(res.error||'Failed.'));
+}
+
+async function loadEmployeesForPayroll() {
+  const res=await api('getEmployees');
+  if(!res.success) return;
+  const sel=document.getElementById('adj-emp');
+  res.employees.forEach(e=>{
+    sel.appendChild(new Option(e.name, e.id));
+  });
+}
+
+// ══════════════════════════════════════════
+// URL PREFILL
+// ══════════════════════════════════════════
+function prefillFromURL() {
+  const p=new URLSearchParams(window.location.search);
+  const set=(id,val)=>{ const el=document.getElementById(id); if(el&&val) el.value=val; };
+  set('inv-num',     p.get('inv'));
+  set('dispatch-num',p.get('dispatch'));
+  set('inv-date',    p.get('date'));
+  set('cable-co',    p.get('cable'));
+  set('well-num',    p.get('well'));
+  set('lease-name',  p.get('lease'));
+  set('cable-loc',   p.get('loc'));
+  set('notes',       p.get('notes'));
+
+  const oil=p.get('oil');
+  if(oil) {
+    const sel=document.getElementById('customer');
+    for(let i=0;i<sel.options.length;i++) {
+      if(sel.options[i].value===oil) { sel.selectedIndex=i; customerChanged(); break; }
+    }
+  }
+
+  if(p.toString()) {
+    const notice=document.createElement('div');
+    notice.className='notice green';
+    notice.textContent='✅ Job pre-filled by dispatcher. Go to Hours & Parts to complete.';
+    document.querySelector('#screen-0').prepend(notice);
   }
 }
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function showStatus(id,type,msg) {
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.className='status show '+type;
+  el.textContent=msg;
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('load',()=>{
+  const token=sessionStorage.getItem('mav-token');
+  const user =sessionStorage.getItem('mav-user');
+  if(token&&user) {
+    STATE.token=token;
+    STATE.user=JSON.parse(user);
+    afterLogin();
+  } else {
+    document.getElementById('login-user').focus();
+  }
+  startClock();
+});
 </script>
 </body>
 </html>
