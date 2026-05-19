@@ -2191,7 +2191,7 @@ window.addEventListener('load',()=>{
 // ══════════════════════════════════════════
 // CONFIG — REPLACE WITH YOUR DEPLOYED URL
 // ══════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbyDdFDVAlqtPx9qCq2tkCNt2qIZSBXevsnPnK2lBUJCaAKd9mIdRB0iWO4ZaD57l5_46Q/exec';
+
 
 // ══════════════════════════════════════════
 // STATE
@@ -2294,7 +2294,7 @@ function afterLogin() {
   if(STATE.user.isOwner) {
     document.querySelectorAll('.owner-only').forEach(el => el.style.display='flex');
   }
-
+onst API_URL = 'https://script.google.com/macros/s/AKfycbyDdFDVAlqtPx9qCq2tkCNt2qIZSBXevsnPnK2lBUJCaAKd9mIdRB0iWO4ZaD57l5_46Q/exec';
   // Pre-fill tech name
   if(!STATE.user.isOwner) {
     document.getElementById('spooler-name').value = STATE.user.name;
