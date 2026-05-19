@@ -659,30 +659,39 @@ let STATE = {
 async function api(action, data={}) {
   const payload = { action, token: STATE.token, ...data };
   return new Promise((resolve) => {
-    // Use JSONP approach to bypass CORS completely
-    const cbName  = 'cb_' + Date.now();
+    // Use sequential ID so callback name is predictable
+    if(!window._apiCounter) window._apiCounter = 0;
+    window._apiCounter++;
+    const cbName  = 'mav_cb_' + window._apiCounter;
     const encoded = encodeURIComponent(JSON.stringify(payload));
     const url     = API_URL + '?payload=' + encoded + '&callback=' + cbName;
 
+    // Register callback on window BEFORE adding script
     window[cbName] = function(result) {
-      delete window[cbName];
-      document.getElementById('jsonp-container').removeChild(script);
       resolve(result);
+      // Cleanup after short delay
+      setTimeout(function() { 
+        try { delete window[cbName]; } catch(e){}
+      }, 1000);
     };
 
     const script = document.createElement('script');
-    script.src   = url;
+    script.src = url;
+    script.id  = cbName;
+
     script.onerror = function() {
-      delete window[cbName];
       resolve({ success: false, error: 'Network error. Check your connection.' });
+      try { delete window[cbName]; } catch(e){}
     };
-    setTimeout(() => {
+
+    setTimeout(function() {
       if(window[cbName]) {
-        delete window[cbName];
         resolve({ success: false, error: 'Request timed out.' });
+        try { delete window[cbName]; } catch(e){}
       }
-    }, 15000);
-    document.getElementById('jsonp-container').appendChild(script);
+    }, 30000);
+
+    document.head.appendChild(script);
   });
 }
 
