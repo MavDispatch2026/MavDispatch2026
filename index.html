@@ -630,7 +630,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 // ══════════════════════════════════════════
 // CONFIG — REPLACE WITH YOUR DEPLOYED URL
 // ══════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbxO9tUnEl_U2T37bTeLwWQDEhBp8swKT9ssTZq5LlL9OCzbKcIiIZnz315aWfRm5qDj/exec';
+const API_URL = 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL';
 
 // ══════════════════════════════════════════
 // STATE
@@ -658,13 +658,12 @@ let STATE = {
 async function api(action, data={}) {
   const payload = { action, token: STATE.token, ...data };
   try {
-    // Use GET with encoded payload to avoid CORS issues
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    const url     = API_URL + '?payload=' + encoded;
-    const res     = await fetch(url, { method: 'GET', mode: 'cors' });
-    const text    = await res.text();
-    try { return JSON.parse(text); }
-    catch(e) { return { success: false, error: 'Invalid response from server.' }; }
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
   } catch(e) {
     return { success: false, error: 'Network error. Check your connection.' };
   }
